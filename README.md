@@ -6,7 +6,7 @@
 
 ### (가) SplashActivity 
 Splash screen은 이미지나 로고, 현재 버전의 소프트웨어를 포함한 그래픽 요소를 보여주는 화면으로, 보통 게임이나 프로그램이 실행되고 있을 때 나오는 화면입니다.
-해당 액티비티에서 Blank 앱의 로고를 1초간 보여주고 LoginActivity로 이동합니다.
+해당 액티비티에서 Song SSam 앱의 로고를 1초간 보여주고 LoginActivity로 이동합니다.
 
 ![SongSSam_SplashActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/49e6f181-5b92-4254-af28-7d8424c2ff81)
 
