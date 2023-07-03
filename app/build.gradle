@@ -44,4 +44,4 @@ dependencies {
 
     //kakao 의존성
     implementation "com.kakao.sdk:v2-user:2.14.0" // 카카오 로그인
-}
+}q
