@@ -22,5 +22,4 @@ class SplashActivity : AppCompatActivity() {
             finish()
         }, splashTime)
     }
-
 }
