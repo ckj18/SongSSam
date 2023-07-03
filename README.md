@@ -11,7 +11,7 @@ Splash screen은 이미지나 로고, 현재 버전의 소프트웨어를 포함
 ![SongSSam_SplashActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/49e6f181-5b92-4254-af28-7d8424c2ff81)
 
 ### (나) LoginActivity
-Kakao oAuth를 이용한 로그인 기능 구현
-
+Kakao oAuth를 이용한 로그인 기능 구현 - kakaotalk을 이용한 login을 시도한 후 kakaotalk이 미설치시 kakao계정을 이용한 로그인을 시도
+![kakaoLogin](https://github.com/chlwnsxo00/SongSSam/assets/31373739/07e7a799-bbd4-4cfe-a24b-f82000440408)
 
 
