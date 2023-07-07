@@ -40,7 +40,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //kakao 의존성
-    implementation "com.kakao.sdk:v2-user:2.14.0" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-all:2.14.0" // 전체 모듈 설치, 2.11.0 버전부터 지원
 
     //Ksoup 의존성
     implementation "com.github.fcannizzaro:ksoup:1.0.4"
