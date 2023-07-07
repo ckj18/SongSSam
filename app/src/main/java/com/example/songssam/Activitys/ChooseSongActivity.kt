@@ -42,8 +42,8 @@ class ChooseSongActivity : AppCompatActivity() {
 
             for(elements in elements){  //elements의 개수만큼 반복
                 val coverImage = elements.select(".image_typeAll img").attr("src")
-                val title = elements.select(".wrap_song_info .rank01 span a").text()
-                val artist = limitchars(elements.select(".wrap_song_info .rank02 span").text())
+                val title = removeBracket(elements.select(".wrap_song_info .rank01 span a").text())
+                val artist = elements.select(".wrap_song_info .rank02 span").text()
                 itemList.add(ChooseSongGridItem(coverImage,title,artist))     //위에서 크롤링 한 내용들을 itemlist에 추가
                 Log.i(TAG,"item추가"+ title + artist + coverImage)
             }
@@ -53,9 +53,10 @@ class ChooseSongActivity : AppCompatActivity() {
             }
         }).start()
     }
-    private fun limitchars(text:String):String{
-        if(text.length>14){
-            return text.substring(0,12) + ".."
+
+    private fun removeBracket(text: String):String{
+        if(text.indexOf("(")!==-1){
+            return text.substring(0,text.indexOf("("))
         }
         return text
     }
