@@ -8,15 +8,36 @@
 Splash screen은 이미지나 로고, 현재 버전의 소프트웨어를 포함한 그래픽 요소를 보여주는 화면으로, 보통 게임이나 프로그램이 실행되고 있을 때 나오는 화면입니다.
 해당 액티비티에서 Song SSam 앱의 로고를 1초간 보여주고 LoginActivity로 이동합니다.
 
-![SongSSam_SplashActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/49e6f181-5b92-4254-af28-7d8424c2ff81)
+![SplashActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/80275b85-9012-4de5-bf9e-6d252277fb89)
+
 
 ### (나) LoginActivity
 Kakao oAuth를 이용한 로그인 기능 구현 - kakaotalk을 이용한 login을 시도한 후 kakaotalk이 미설치시 kakao계정을 이용한 로그인을 시도
 
-![kakaoLogin](https://github.com/chlwnsxo00/SongSSam/assets/31373739/07e7a799-bbd4-4cfe-a24b-f82000440408)
+![KakaoLoginActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/0809ad26-274d-4be7-9932-1d6fb358f4e8)
+
 
 ### (다) AnalysisingUserActivity
 (노래 10개 정도 선택) → 노래 선호도, 대표노래, 장르, 음역대
+
+멜론에서 top 100 chart를 크롤링 해 gridview를 통해 시각화하는 Activity
+
+![ChooseSongActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/e486bb79-4bff-48e1-a77d-381a4b94b9dc)
+
+구현 과정에서 오픈 소스를 3가지 사용
+
+https://github.com/fornewid/neumorphism
+
+Neumorphism을 위 사이트 adapter를 활용
+
+https://github.com/hdodenhof/CircleImageView
+
+위 사이트를 통해 원형으로 crop
+
+https://github.com/bumptech/glide
+
+위 사이트를 통해 크롤링한 url을 통해 imageView를 url의 이미지 그림으로 변경
+
 
 여러 노래 목록을 보여주고 사용자가 노래를 10개 정도 선택할 수 있도록 함.
 
