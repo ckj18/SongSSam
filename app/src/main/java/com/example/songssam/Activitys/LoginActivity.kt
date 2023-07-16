@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         checkKakaoSession()
-        initKakaoLoginButton()
+       initKakaoLoginButton()
     }
 
     private fun checkKakaoSession() {
