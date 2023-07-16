@@ -16,14 +16,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:neumorph_shapeType="pressed">
-        <TextView
-            android:id="@+id/textView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:gravity="center"
-            android:text="정확한 서비스를 제공하기 위해 검사를 진행합니다.\n사용자가 부르고 싶은 노래를 10곡 선택해주세요."
-            android:textColor="@color/black" />
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="좋아하는 곡 10곡 선택"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="15dp"
+                android:layout_marginBottom="10dp"
+                android:text="정확한 서비스를 제공하기 위해 검사를 진행합니다."
+                android:textColor="@color/black" />
+            <EditText
+                android:id="@+id/search_edittext"
+                android:layout_width="320dp"
+                android:layout_gravity="center"
+                android:layout_height="20dp"
+                android:background="@drawable/edittext_rounded_circle"
+                android:gravity="center"
+                android:hint="곡 검색"
+                android:textSize="15dp" />
+        </LinearLayout>
+
+
     </soup.neumorphism.NeumorphCardView>
 
     <GridView
