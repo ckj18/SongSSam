@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/gray"
     tools:context=".Activitys.ChooseSongActivity">
-
     <soup.neumorphism.NeumorphCardView
         android:id="@+id/pressed_card"
         style="@style/Widget.Neumorph.CardView"
@@ -25,7 +24,6 @@
             android:text="정확한 서비스를 제공하기 위해 검사를 진행합니다.\n사용자가 부르고 싶은 노래를 10곡 선택해주세요."
             android:textColor="@color/black" />
     </soup.neumorphism.NeumorphCardView>
-
     <GridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
@@ -36,6 +34,4 @@
         app:layout_constraintTop_toBottomOf="@+id/pressed_card"
         android:numColumns="3"
         />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

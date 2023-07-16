@@ -54,11 +54,19 @@ class ChooseSongActivity : AppCompatActivity() {
         }).start()
     }
 
+
     private fun removeBracket(text: String):String{
+        // ()로 표시하는 세부사항 및 피처링 정보 와 같은 내용을 제거
         if(text.indexOf("(")!==-1){
             return text.substring(0,text.indexOf("("))
         }
         return text
     }
+
+    private fun searchSong(title : String){
+
+    }
+
+
 }
 
