@@ -16,17 +16,6 @@ class LoginActivity : AppCompatActivity() {
         if (error != null) {
             Log.e(TAG, "카카오계정으로 로그인 실패", error)
         } else if (token != null) {
-            UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-                if (error != null) {
-                    Log.e(TAG, "토큰 정보 보기 실패", error)
-                }
-                else if (tokenInfo != null) {
-                    Log.i(TAG, "토큰 정보 보기 성공" +
-                            "\n그냥토큰: ${token}"+
-                            "\n회원번호: ${tokenInfo.id}" +
-                            "\n만료시간: ${tokenInfo.expiresIn} 초")
-                }
-            }
             startActivity(Intent(this@LoginActivity, ChooseSongActivity::class.java))
         }
     }
