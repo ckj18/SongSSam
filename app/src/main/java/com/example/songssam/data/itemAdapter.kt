@@ -1,28 +1,24 @@
 package com.example.songssam.data
 
-import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.GridView
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.songssam.R
 import de.hdodenhof.circleimageview.CircleImageView
 
-
-class ChooseSongGridAdapter(private var context: Context, private var itemlist: ArrayList<ChooseSongGridItem>) : BaseAdapter() {
+class ChooseSongGridAdapter(private var context: Context, private var itemlist: ArrayList<items>) : BaseAdapter() {
+    private var selectedItemList: HashSet<SelectedItem> = HashSet()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val item: ChooseSongGridItem = itemlist[position]
+        val item: items = itemlist[position]
         var itemView = convertView
 
         if (itemView == null) {
@@ -33,13 +29,28 @@ class ChooseSongGridAdapter(private var context: Context, private var itemlist: 
         val artist = itemView!!.findViewById<TextView>(R.id.artist)
         val title = itemView.findViewById<TextView>(R.id.title)
         val coverImage = itemView.findViewById<CircleImageView>(R.id.cover_image)
+        val checked = itemView.findViewById<ImageView>(R.id.checked)
 
         artist.text = item.artist
-        Log.i(ContentValues.TAG,"grid 화면 변경 "+artist.text)
         title.text = item.title
-        Log.i(ContentValues.TAG,"grid 화면 변경 "+title.text)
         Glide.with(itemView).load(item.coverImage).into(coverImage)
-        Log.i(ContentValues.TAG,"grid 화면 변경 "+coverImage.toString())
+
+        itemView.setOnClickListener {
+            // 이미 선택한 아이템 재 선택시 제거
+            if(selectedItemList.contains(SelectedItem(item.songID,item.title,item.artist))){
+                selectedItemList.remove(SelectedItem(item.songID,item.title,item.artist))
+                checked.isVisible=false
+            }
+            // 10개 까지 선택하도록 10개를 선택한 후 더 추가하면 Toast 띄우기
+            else if(selectedItemList.size>=10){
+                Toast.makeText(context,"선호하는 곡을 10개만 선택해 주세요", Toast.LENGTH_SHORT).show()
+            }
+            //아이템 추가
+            else{
+                selectedItemList.add(SelectedItem(item.songID,item.title,item.artist))
+                checked.isVisible=true
+            }
+        }
 
         return itemView
     }

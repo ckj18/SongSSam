@@ -1,28 +1,28 @@
 package com.example.songssam.Activitys
 
-import android.content.ContentValues.TAG
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.DocumentsContract.Document
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.widget.Adapter
-import android.widget.EditText
-import android.widget.GridView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
+import androidx.core.view.get
+import androidx.core.view.isVisible
 import com.example.songssam.R
-import com.example.songssam.data.ChooseSongGridAdapter
-import com.example.songssam.data.ChooseSongGridItem
+import com.example.songssam.data.itemAdapter
+import com.example.songssam.data.items
+import com.example.songssam.data.SelectedItem
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 
 
 class ChooseSongActivity : AppCompatActivity() {
 
-    private var itemList: ArrayList<ChooseSongGridItem> = ArrayList()
-    private lateinit var preText: String
+    private var itemList: ArrayList<items> = ArrayList()
+    private var selectedItemList: HashSet<SelectedItem> = HashSet()
+    private val gridView: GridView by lazy {
+        findViewById(R.id.gridView)
+    }
     private val editText: EditText by lazy {
         findViewById(R.id.search_edittext)
     }
@@ -34,30 +34,62 @@ class ChooseSongActivity : AppCompatActivity() {
         searchSong()
     }
 
-    private fun initGridView(itemList: ArrayList<ChooseSongGridItem>) {
-        val gridView: GridView = findViewById(R.id.gridView)
-        val adapter = ChooseSongGridAdapter(this@ChooseSongActivity, itemList)
+    private fun setItemClickListener(itemList: ArrayList<items>){
+        gridView.setOnItemClickListener { parent, view, position, id ->
+            // 이미 선택한 아이템 재 선택시 제거
+             if(selectedItemList.contains(SelectedItem(itemList[position].songID,itemList[position].title,itemList[position].artist))){
+                selectedItemList.remove(SelectedItem(itemList[position].songID,itemList[position].title,itemList[position].artist))
+                 gridView[position].findViewById<ImageView>(R.id.checked).isVisible = false
+            }
+            // 10개 까지 선택하도록 10개를 선택한 후 더 추가하면 Toast 띄우기
+            else if(selectedItemList.size>=10){
+                Toast.makeText(this,"선호하는 곡을 10개만 선택해 주세요",Toast.LENGTH_SHORT).show()
+            }
+            //아이템 추가
+            else{
+                selectedItemList.add(SelectedItem(itemList[position].songID,itemList[position].title,itemList[position].artist))
+                 gridView[position].findViewById<ImageView>(R.id.checked).isVisible = true
+                 Log.d("clicked","position = "+ position)
+            }
+        }
+    }
+
+    private fun initGridView(itemList: ArrayList<items>) {
+        val adapter = itemAdapter(this@ChooseSongActivity, itemList)
         gridView.adapter = adapter
+        setItemClickListener(itemList)
     }
 
     private fun crawlingTop100() {
         Thread(Runnable {
             val doc = Jsoup.connect("https://www.melon.com/chart/index.htm").userAgent("Chrome").get()
-            val elements: Elements = doc.select(".lst50")
+            var elements: Elements = doc.select(".lst50")
             // mobile-padding 클래스의 board-list의 id를 가진 것들을 elements 객체에 저장
             /*
             크롤링 하는 법 : class 는 .(class) 로 찾고 id 는 #(id) 로 검색
              */
             for (elements in elements) {  //elements의 개수만큼 반복
+                val songID = elements.attr("data-song-no")
                 val coverImage = elements.select(".image_typeAll img").attr("src")
                 val title = removeBracket(elements.select(".wrap_song_info .rank01 span a").text())
                 val artist = elements.select(".wrap_song_info .rank02 span").text()
                 itemList.add(
-                    ChooseSongGridItem(
-                        coverImage, title, artist
+                    items(
+                        songID, coverImage, title, artist
                     )
                 )     //위에서 크롤링 한 내용들을 itemlist에 추가
-                Log.i(TAG, "item추가" + title + artist + coverImage)
+            }
+            elements = doc.select(".lst100")
+            for (elements in elements) {  //elements의 개수만큼 반복
+                val songID = elements.attr("data-song-no")
+                val coverImage = elements.select(".image_typeAll img").attr("src")
+                val title = removeBracket(elements.select(".wrap_song_info .rank01 span a").text())
+                val artist = elements.select(".wrap_song_info .rank02 span").text()
+                itemList.add(
+                    items(
+                        songID, coverImage, title, artist
+                    )
+                )     //위에서 크롤링 한 내용들을 itemlist에 추가
             }
             runOnUiThread {
                 initGridView(itemList)
@@ -65,62 +97,28 @@ class ChooseSongActivity : AppCompatActivity() {
         }).start()
     }
 
-<<<<<<< HEAD
-
-    private fun removeBracket(text: String):String{
-        // ()로 표시하는 세부사항 및 피처링 정보 와 같은 내용을 제거
-        if(text.indexOf("(")!==-1){
-            return text.substring(0,text.indexOf("("))
-=======
     private fun searchSong() {
-        var itemlist: ArrayList<ChooseSongGridItem> = ArrayList()
+        var itemlist: ArrayList<items> = ArrayList()
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Thread(Runnable {
-                    val doc = Jsoup.connect("https://www.shazam.com/ko/charts/top-200/world").userAgent("Chrome").get()
-                    val elements: Elements = doc.select(".lst50")
-                    // mobile-padding 클래스의 board-list의 id를 가진 것들을 elements 객체에 저장
-                    /*
-                    크롤링 하는 법 : class 는 .(class) 로 찾고 id 는 #(id) 로 검색
-                     */
-                    for (elements in elements) {  //elements의 개수만큼 반복
-                        val coverImage = elements.select(".image_typeAll img").attr("src")
-                        val title = removeBracket(elements.select(".wrap_song_info .rank01 span a").text())
-                        val artist = elements.select(".wrap_song_info .rank02 span").text()
-                        itemList.add(
-                            ChooseSongGridItem(
-                                coverImage, title, artist
-                            )
-                        )     //위에서 크롤링 한 내용들을 itemlist에 추가
-                        Log.i(TAG, "item추가" + title + artist + coverImage)
-                    }
-                    runOnUiThread {
-                        initGridView(itemlist)
-                    }
-                }).start()
+                dynamicClawling(s.toString())
             }
-
             override fun afterTextChanged(s: Editable?) {
                 TODO("검색이 내용이 없으면 그냥 Top100 크롤링 해서 시각화")
             }
         })
     }
 
+    private fun dynamicClawling(text : String){
+        //TODO 동적 크롤링을 통해 검색 글자를 통해 관련 노래 제목, 가수, 커버 이미지를 크롤링
+    }
+
     private fun removeBracket(text: String): String {
         if (text.indexOf("(") !== -1) {
             return text.substring(0, text.indexOf("("))
->>>>>>> ed7a4143c09e560d160fdbe2f31ae9e48775e99c
         }
         return text
     }
-
-    private fun searchSong(title : String){
-
-    }
-
-
 }
-
