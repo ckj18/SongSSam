@@ -1,10 +1,8 @@
 package com.example.songssam.data
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -13,57 +11,65 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.songssam.R
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.NonDisposableHandle.parent
 
-class ChooseSongGridAdapter(private var context: Context, private var itemlist: ArrayList<items>) : BaseAdapter() {
+
+class itemAdapter(private val itemlist:ArrayList<items>) :
+    RecyclerView.Adapter<itemAdapter.ViewHolder>() {
+
     private var selectedItemList: HashSet<SelectedItem> = HashSet()
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val item: items = itemlist[position]
-        var itemView = convertView
-
-        if (itemView == null) {
-            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            itemView = inflater.inflate(R.layout.grid_item, parent, false)
+    /**
+     * Provide a reference to the type of views that you are using
+     * (custom ViewHolder).
+     */
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val artist: TextView
+        val title: TextView
+        val coverImage: CircleImageView
+        val checked: ImageView
+        val touch: soup.neumorphism.NeumorphCardView
+        init {
+            artist = itemView.findViewById(R.id.artist)
+            title = itemView.findViewById(R.id.title)
+            coverImage = itemView.findViewById(R.id.cover_image)
+            checked = itemView.findViewById(R.id.checked)
+            touch = itemView.findViewById(R.id.pressed_card)
         }
+    }
 
-        val artist = itemView!!.findViewById<TextView>(R.id.artist)
-        val title = itemView.findViewById<TextView>(R.id.title)
-        val coverImage = itemView.findViewById<CircleImageView>(R.id.cover_image)
-        val checked = itemView.findViewById<ImageView>(R.id.checked)
+    // Create new views (invoked by the layout manager)
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+        // Create a new view, which defines the UI of the list item
+        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item, viewGroup, false)
 
-        artist.text = item.artist
-        title.text = item.title
-        Glide.with(itemView).load(item.coverImage).into(coverImage)
+        return ViewHolder(view)
+    }
 
-        itemView.setOnClickListener {
+    // Replace the contents of a view (invoked by the layout manager)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.artist.text = itemlist.get(position).artist
+        holder.title.text = itemlist.get(position).title
+        Glide.with(holder.itemView).load(itemlist.get(position).coverImage).into(holder.coverImage)
+        holder.touch.setOnClickListener {
             // 이미 선택한 아이템 재 선택시 제거
-            if(selectedItemList.contains(SelectedItem(item.songID,item.title,item.artist))){
-                selectedItemList.remove(SelectedItem(item.songID,item.title,item.artist))
-                checked.isVisible=false
+            if (selectedItemList.contains(SelectedItem(itemlist.get(position).songID, itemlist.get(position).title, itemlist.get(position).artist))) {
+                selectedItemList.remove(SelectedItem(itemlist.get(position).songID, itemlist.get(position).title, itemlist.get(position).artist))
+                holder.checked.isVisible = false
             }
             // 10개 까지 선택하도록 10개를 선택한 후 더 추가하면 Toast 띄우기
-            else if(selectedItemList.size>=10){
-                Toast.makeText(context,"선호하는 곡을 10개만 선택해 주세요", Toast.LENGTH_SHORT).show()
+            else if (selectedItemList.size >= 10) {
+                Toast.makeText(holder.itemView.context, "선호하는 곡을 10개만 선택해 주세요", Toast.LENGTH_SHORT).show()
             }
             //아이템 추가
-            else{
-                selectedItemList.add(SelectedItem(item.songID,item.title,item.artist))
-                checked.isVisible=true
+            else {
+                selectedItemList.add(SelectedItem(itemlist.get(position).songID, itemlist.get(position).title, itemlist.get(position).artist))
+                holder.checked.isVisible = true
             }
         }
-
-        return itemView
     }
 
-    override fun getItem(position: Int): Any {
-        return position
-    }
+    // Return the size of your dataset (invoked by the layout manager)
+    override fun getItemCount() = itemlist.size
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getCount(): Int {
-        return itemlist.size
-    }
 }

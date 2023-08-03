@@ -8,10 +8,17 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.songssam.R
 import com.example.songssam.data.itemAdapter
 import com.example.songssam.data.items
 import com.example.songssam.data.SelectedItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 
@@ -19,10 +26,10 @@ import org.jsoup.select.Elements
 class ChooseSongActivity : AppCompatActivity() {
 
     private var itemList: ArrayList<items> = ArrayList()
-    private var selectedItemList: HashSet<SelectedItem> = HashSet()
-    private val gridView: GridView by lazy {
-        findViewById(R.id.gridView)
+    private val recyclerView: RecyclerView by lazy {
+        findViewById(R.id.rv)
     }
+    private lateinit var adapter:itemAdapter
     private val editText: EditText by lazy {
         findViewById(R.id.search_edittext)
     }
@@ -34,31 +41,15 @@ class ChooseSongActivity : AppCompatActivity() {
         searchSong()
     }
 
-    private fun setItemClickListener(itemList: ArrayList<items>){
-        gridView.setOnItemClickListener { parent, view, position, id ->
-            // 이미 선택한 아이템 재 선택시 제거
-             if(selectedItemList.contains(SelectedItem(itemList[position].songID,itemList[position].title,itemList[position].artist))){
-                selectedItemList.remove(SelectedItem(itemList[position].songID,itemList[position].title,itemList[position].artist))
-                 gridView[position].findViewById<ImageView>(R.id.checked).isVisible = false
-            }
-            // 10개 까지 선택하도록 10개를 선택한 후 더 추가하면 Toast 띄우기
-            else if(selectedItemList.size>=10){
-                Toast.makeText(this,"선호하는 곡을 10개만 선택해 주세요",Toast.LENGTH_SHORT).show()
-            }
-            //아이템 추가
-            else{
-                selectedItemList.add(SelectedItem(itemList[position].songID,itemList[position].title,itemList[position].artist))
-                 gridView[position].findViewById<ImageView>(R.id.checked).isVisible = true
-                 Log.d("clicked","position = "+ position)
-            }
+    private fun initRecyclerView(itemList: ArrayList<items>) {
+        recyclerView.layoutManager = GridLayoutManager(this,3)
+        CoroutineScope(Dispatchers.Main).launch {
+            // recyclerview adapter 초기화
+            adapter = itemAdapter(itemList)
+            recyclerView.adapter = adapter
         }
     }
 
-    private fun initGridView(itemList: ArrayList<items>) {
-        val adapter = itemAdapter(this@ChooseSongActivity, itemList)
-        gridView.adapter = adapter
-        setItemClickListener(itemList)
-    }
 
     private fun crawlingTop100() {
         Thread(Runnable {
@@ -92,7 +83,7 @@ class ChooseSongActivity : AppCompatActivity() {
                 )     //위에서 크롤링 한 내용들을 itemlist에 추가
             }
             runOnUiThread {
-                initGridView(itemList)
+                initRecyclerView(itemList)
             }
         }).start()
     }
