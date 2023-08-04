@@ -14,10 +14,13 @@ import com.example.songssam.R
 import com.example.songssam.data.SelectedItem
 import com.example.songssam.data.items
 
-class itemAdapter(private var itemlist: MutableList<items>) :
+class itemAdapter(private var itemlist: MutableList<items>, private val selectionChangeListener: SelectionChangeListener) :
     RecyclerView.Adapter<itemAdapter.TaskViewHolder>() {
     private var selectedItemList = mutableListOf<SelectedItem>()
-    private var isEnable = false
+
+    interface SelectionChangeListener {
+        fun onSelectionChanged(selectedItems: List<SelectedItem>)
+    }
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): TaskViewHolder {
@@ -37,18 +40,18 @@ class itemAdapter(private var itemlist: MutableList<items>) :
         holder.checked.isVisible = selectedItemList.contains(SelectedItem(item.songID, item.title, item.artist))
 
         holder.touch.setOnClickListener {
-            Log.d("position","Position = "+ position)
             if (selectedItemList.contains(SelectedItem(item.songID, item.title, item.artist))) {
-                selectedItemList.removeAt(position)
+                selectedItemList.remove(SelectedItem(item.songID, item.title, item.artist))
                 holder.checked.isVisible = false
                 item.selected = false
-            } else if (selectedItemList.size > 10) {
+            } else if (selectedItemList.size == 10) {
                 Toast.makeText(it.context, "10곡만 선택해주세요.", Toast.LENGTH_SHORT).show()
             } else {
                 item.selected = true
                 holder.checked.isVisible = true
                 selectedItemList.add(SelectedItem(item.songID, item.title, item.artist))
             }
+            selectionChangeListener.onSelectionChanged(selectedItemList)
         }
     }
 

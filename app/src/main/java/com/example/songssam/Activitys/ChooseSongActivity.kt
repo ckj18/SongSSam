@@ -11,12 +11,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.songssam.R
 import com.example.songssam.adapter.itemAdapter
+import com.example.songssam.data.SelectedItem
 import com.example.songssam.data.items
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 
 
-class ChooseSongActivity : AppCompatActivity(){
+class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListener{
 
     private val btn: AppCompatButton by lazy {
         findViewById(R.id.btn)
@@ -39,9 +40,8 @@ class ChooseSongActivity : AppCompatActivity(){
     }
 
     private fun initBTN() {
-        btn.isClickable = false
         btn.setOnClickListener {
-            val intent : Intent = Intent(this,RecordingActivity::class.java)
+            val intent = Intent(this,RecordingActivity::class.java)
             startActivity(intent)
         }
     }
@@ -50,7 +50,7 @@ class ChooseSongActivity : AppCompatActivity(){
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         // recyclerview adapter 초기화
-        adapter = itemAdapter(itemList)
+        adapter = itemAdapter(itemList, this) // Register the activity as the listener
         recyclerView.adapter = adapter
     }
 
@@ -91,6 +91,15 @@ class ChooseSongActivity : AppCompatActivity(){
                 initRecyclerView(itemList)
             }
         }).start()
+    }
+
+    override fun onSelectionChanged(selectedItems: List<SelectedItem>) {
+        // Update the TextView in your activity with the current selected items count
+        val textView: TextView = findViewById(R.id.textView1)
+        textView.text = "선호하는 곡 10곡 선택  ( ${selectedItems.size} / 10 )"
+
+        // Enable or disable the button based on the number of selected items
+        btn.isClickable = selectedItems.size == 10
     }
 
     private fun searchSong() {
