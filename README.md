@@ -21,9 +21,7 @@ Kakao oAuth를 이용한 로그인 기능 구현 - kakaotalk을 이용한 login�
 (노래 10개 정도 선택) → 노래 선호도, 대표노래, 장르, 음역대
 
 멜론에서 top 100 chart를 크롤링 해 recyclerView를 통해 gridView처럼 시각화한 Activity
-
-![Screenshot_2023-08-08-17-48-48-830](https://github.com/chlwnsxo00/SongSSam/assets/31373739/4330fd04-0880-4dff-b576-374abcd7d327)
-
+<img src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/4330fd04-0880-4dff-b576-374abcd7d327.jpeg" width="200" height="200"/>
 
 선택한 곡의 개수를 상단에 표시
 10개 이상 선택시 Toast 메시지를 show
@@ -39,7 +37,7 @@ https://github.com/bumptech/glide  -> 이미지 삽입
 
 ### (라) RecordingAcitivity
 
-![Screenshot_2023-08-08-17-48-57-841](https://github.com/chlwnsxo00/SongSSam/assets/31373739/16bc93ff-57d8-4095-accb-ad721c992e2a)
+<img src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/16bc93ff-57d8-4095-accb-ad721c992e2a.jpeg" width="200" height="200"/>
 
 선택한 곡을 바탕으로 음역대와 장르, 가수에 맞춰 사용자가 부르고 싶어할 곡을 예측해 비슷한 곡을 부르게 하도록 하는 Activity
 
