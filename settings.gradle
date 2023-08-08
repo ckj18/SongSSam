@@ -13,6 +13,11 @@ dependencyResolutionManagement {
         //Kakao login
         maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
         maven { url 'https://jitpack.io' }
+
+        maven{
+            name = "TarsosDSP repository"
+            url = "https://mvn.0110.be/releases"
+        }
     }
 }
 rootProject.name = "Song SSam"
