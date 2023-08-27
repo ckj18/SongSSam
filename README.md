@@ -1,4 +1,4 @@
-# 모각소 & 파란학기제 프로젝트 ( Sam SSong )
+# 모각소 & 파란학기제 프로젝트 ( Song SSam )
 
 <img width="210" alt="image" src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/c9080283-e822-410f-b46d-84be12673a50">
 
