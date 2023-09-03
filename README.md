@@ -37,14 +37,19 @@ Kakao oAuth를 이용한 로그인 기능 구현 - kakaotalk을 이용한 login�
 <img src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/4330fd04-0880-4dff-b576-374abcd7d327.jpeg" width="200" />
 
 선택한 곡의 개수를 상단에 표시
+
 10개 이상 선택시 Toast 메시지를 show
+
 선택하면 체크표시가 Visible = true
+
 선택해제하면 체크표시가 Visivle = false
+
 곡을 10개 선택 시 완료 버튼이 클릭 가능 및 다음 엑티비티로 이동
 
 구현 과정에서 오픈 소스를 3가지 사용
 
 https://github.com/fornewid/neumorphism  -> neumorphism
+
 https://github.com/hdodenhof/CircleImageView  -> 이미지 원형으로 crop
 https://github.com/bumptech/glide  -> 이미지 삽입
 
