@@ -51,6 +51,7 @@ Kakao oAuth를 이용한 로그인 기능 구현 - kakaotalk을 이용한 login�
 https://github.com/fornewid/neumorphism  -> neumorphism
 
 https://github.com/hdodenhof/CircleImageView  -> 이미지 원형으로 crop
+
 https://github.com/bumptech/glide  -> 이미지 삽입
 
 ### (라) RecordingAcitivity
