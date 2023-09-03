@@ -1,6 +1,18 @@
-# 모각소 & 파란학기제 프로젝트 ( Sam SSong )
+# 모각소 & 파란학기제 프로젝트 ( Song SSam )
+
+<img width="210" alt="image" src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/c9080283-e822-410f-b46d-84be12673a50">
 
 음성 Diffusion 모델인 DDSP-SVC를 활용하여 서비스 이용자의 목소리를 바탕으로 커버곡을 생성하고 이용자가 본인의 노래 녹음 파일을 올리면 유사도를 검증하여 노래를 코칭해주는 멘토링 서비스
+
+팀원 : 
+
+최준태 - 안드로이드
+
+최경주 - 모델
+
+정동구 - 리액트
+
+김우영 - 스프링
 
 ## 1. 각 Activiry 설명
 
@@ -17,34 +29,33 @@ Kakao oAuth를 이용한 로그인 기능 구현 - kakaotalk을 이용한 login�
 ![KakaoLoginActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/0809ad26-274d-4be7-9932-1d6fb358f4e8)
 
 
-### (다) AnalysisingUserActivity
+### (다) ChooseSongActivity
 (노래 10개 정도 선택) → 노래 선호도, 대표노래, 장르, 음역대
 
-멜론에서 top 100 chart를 크롤링 해 gridview를 통해 시각화하는 Activity
+멜론에서 top 100 chart를 크롤링 해 recyclerView를 통해 gridView처럼 시각화한 Activity
 
-![ChooseSongActivity](https://github.com/chlwnsxo00/SongSSam/assets/31373739/e486bb79-4bff-48e1-a77d-381a4b94b9dc)
+<img src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/4330fd04-0880-4dff-b576-374abcd7d327.jpeg" width="200" />
+
+선택한 곡의 개수를 상단에 표시
+10개 이상 선택시 Toast 메시지를 show
+선택하면 체크표시가 Visible = true
+선택해제하면 체크표시가 Visivle = false
+곡을 10개 선택 시 완료 버튼이 클릭 가능 및 다음 엑티비티로 이동
 
 구현 과정에서 오픈 소스를 3가지 사용
 
-https://github.com/fornewid/neumorphism
+https://github.com/fornewid/neumorphism  -> neumorphism
+https://github.com/hdodenhof/CircleImageView  -> 이미지 원형으로 crop
+https://github.com/bumptech/glide  -> 이미지 삽입
 
-Neumorphism을 위 사이트 adapter를 활용
+### (라) RecordingAcitivity
 
-https://github.com/hdodenhof/CircleImageView
+<img src="https://github.com/chlwnsxo00/SongSSam/assets/31373739/16bc93ff-57d8-4095-accb-ad721c992e2a.jpeg" width="200"/>
 
-위 사이트를 통해 원형으로 crop
+선택한 곡을 바탕으로 음역대와 장르, 가수에 맞춰 사용자가 부르고 싶어할 곡을 예측해 비슷한 곡을 부르게 하도록 하는 Activity
 
-https://github.com/bumptech/glide
+상단에 Perfect score을 구현할 예정
+그리고 총 MR의 시간과 녹음 기능 및 노래 실행 기능을 구현할 예정
 
-위 사이트를 통해 크롤링한 url을 통해 imageView를 url의 이미지 그림으로 변경
-
-
-여러 노래 목록을 보여주고 사용자가 노래를 10개 정도 선택할 수 있도록 함.
-
-선택한 노래를 알고리즘으로 분석해 사용자의 노래 선호도, 대표노래, 장르를 추출함.
-
-음역대의 경우 선택한 노래를 통해 높은 음역대를 좋아하는지, 낮은 음역대를 좋아하는지를 파악.
-
--> 잘 부르고 싶은 원하는 노래가 있는지를 설문을 통해 알아내고 있다면 해당 노래의 음역대나 장르 등에 맞게 샘플 데이터를 수집하는 것이 더욱 좋은 결과를 얻을 수 있을 것 같음.
-
-https://velog.io/@mstar228/%EC%B6%94%EC%B2%9C%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B0%9C%EC%9A%94
+실시간 pitch dectection / pitch shifting을 지원하면서 오픈 소스인 라이브러리인 TarsosDSP을 이용하여 perfect score 기능 구현
+https://dev-minji.tistory.com/119 을 참고
