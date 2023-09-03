@@ -10,11 +10,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/record_container"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
         android:background="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/perfect_socre"
             android:layout_width="match_parent"
@@ -22,7 +23,30 @@
             android:background="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" >
+
+            <TextView
+                android:id="@+id/pitch"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="pitch"
+                android:textSize="20dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="노래 제목"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/perfect_socre" />
 
         <TextView
             android:id="@+id/lyric"
@@ -30,35 +54,38 @@
             android:layout_height="wrap_content"
             android:text="가사 첫번째 줄"
             android:textSize="20dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/perfect_socre"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
         <TextView
             android:id="@+id/lyric2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="가사 두번째 줄"
             android:textSize="20dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lyric"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lyric" />
+
         <TextView
             android:id="@+id/lyric3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="가사 세번째 줄"
             android:textSize="20dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lyric2"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lyric2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_playtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00 / XX:XX"
-        android:textSize="25dp"
+        android:text="녹음 시간"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/record_container"
@@ -97,7 +124,7 @@
             android:src="@drawable/pause" />
 
         <soup.neumorphism.NeumorphFloatingActionButton
-            android:id="@+id/return_btn"
+            android:id="@+id/reset_btn"
             style="@style/Widget.Neumorph.FloatingActionButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
@@ -119,5 +146,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linear_layout" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_playtime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/record_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

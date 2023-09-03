@@ -68,8 +68,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-
     //TarsosDSP (퍼펙트 스코어 - 실시간 pitch dectection / pitch shifting)
-    implementation 'be.tarsos.dsp:core:2.5'
-    implementation 'be.tarsos.dsp:jvm:2.5'
+    implementation files('libs/TarsosDSP-Android-latest.jar')
 }
