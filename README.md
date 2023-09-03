@@ -63,5 +63,4 @@ https://github.com/bumptech/glide  -> 이미지 삽입
 상단에 Perfect score을 구현할 예정
 그리고 총 MR의 시간과 녹음 기능 및 노래 실행 기능을 구현할 예정
 
-실시간 pitch dectection / pitch shifting을 지원하면서 오픈 소스인 라이브러리인 TarsosDSP을 이용하여 perfect score 기능 구현
-https://dev-minji.tistory.com/119 을 참고
+실시간 pitch dectection / pitch shifting 기능 (TarsosDSP를 이용) - https://dev-minji.tistory.com/119
