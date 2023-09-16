@@ -15,4 +15,6 @@
     <color name="backgroundWhite">#fcfcfc</color>
     <color name="darkgray">#90000000</color>
     <color name="red">#90EC1F1F</color>
+    <color name="splash_blue">#586BFF</color>
+
 </resources>
