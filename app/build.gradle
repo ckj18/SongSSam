@@ -5,6 +5,9 @@ plugins {
 
 android {
     compileSdk 33
+    viewBinding {
+        enabled = true
+    }
 
     defaultConfig {
         applicationId "com.example.songssam"
@@ -12,7 +15,10 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
+
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -27,6 +33,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    // Enable ViewBinding
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -70,4 +80,16 @@ dependencies {
 
     //TarsosDSP (퍼펙트 스코어 - 실시간 pitch dectection / pitch shifting)
     implementation files('libs/TarsosDSP-Android-latest.jar')
+
+    //Material Menu
+    implementation 'com.balysv.materialmenu:material-menu:2.0.0'
+
+    //RefreshLayout
+    implementation 'in.srain.cube:ultra-ptr:1.0.11'
+
+    //Balloon
+    implementation "com.github.skydoves:balloon:1.5.4"
+
+    //Progress wheel
+    implementation "com.pnikosis:materialish-progress:1.7"
 }

@@ -13,8 +13,8 @@ import com.example.songssam.R
 import com.example.songssam.data.SelectedItem
 import com.example.songssam.data.items
 
-class itemAdapter(private var itemlist: MutableList<items>, private val selectionChangeListener: SelectionChangeListener) :
-    RecyclerView.Adapter<itemAdapter.TaskViewHolder>() {
+class RecordingItemAdapter(private var itemlist: MutableList<items>, private val selectionChangeListener: RecordingItemAdapter.SelectionChangeListener) :
+    RecyclerView.Adapter<RecordingItemAdapter.TaskViewHolder>() {
     private var selectedItemList = mutableListOf<SelectedItem>()
 
     interface SelectionChangeListener {
@@ -22,14 +22,14 @@ class itemAdapter(private var itemlist: MutableList<items>, private val selectio
     }
 
     // Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): TaskViewHolder {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecordingItemAdapter.TaskViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item, viewGroup, false)
-        return TaskViewHolder(view)
+        return RecordingItemAdapter.TaskViewHolder(view)
     }
 
     // Replace the contents of a view (invoked by the layout manager)
-    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecordingItemAdapter.TaskViewHolder, position: Int) {
         val item = itemlist[position]
 
         holder.artist.text = item.artist
