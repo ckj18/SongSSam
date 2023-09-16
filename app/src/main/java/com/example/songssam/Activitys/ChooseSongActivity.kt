@@ -1,10 +1,14 @@
 package com.example.songssam.Activitys
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.*
+import android.view.MenuItem
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +22,7 @@ import org.jsoup.select.Elements
 
 
 class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListener{
+
 
     private val btn: AppCompatButton by lazy {
         findViewById(R.id.btn)
@@ -37,7 +42,27 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
         crawlingTop100(savedInstanceState)
         initBTN()
         searchSong()
+
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar) //액티비티의 앱바(App Bar)로 지정
+
+        val actionBar: ActionBar? = supportActionBar //앱바 제어를 위해 툴바 액세스
+        actionBar!!.setDisplayHomeAsUpEnabled(true) // 앱바에 뒤로가기 버튼 만들기
+        actionBar?.setHomeAsUpIndicator(R.drawable.arrow_back) // 뒤로가기 버튼 색상 설정
     }
+
+    @SuppressLint("NonConstantResourceId")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.getItemId()) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
 
     private fun initBTN() {
         btn.setOnClickListener {
