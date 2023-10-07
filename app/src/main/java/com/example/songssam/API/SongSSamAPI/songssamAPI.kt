@@ -1,6 +1,5 @@
-package com.example.songssam.API.loginAPI
+package com.example.songssam.API.SongSSamAPI
 
-import com.kakao.sdk.auth.model.OAuthToken
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -19,4 +18,18 @@ interface songssamAPI {
     fun checkAccessToken(
         @Header("Authorization") Authorization: String,
     ):Call<user>
+
+    @POST("/member/user_list")
+    fun updateFavoriteSong(
+        @Header("Authorization") Authorization: String,
+        @Body favoriteSongs: List<Long>
+    ):Call<Void>
+
+    @Headers("accept: application/json",
+        "content-type: application/json")
+    @GET("/song/search")
+    fun search(
+        @Query("target") target: String,
+        @Query("mode") mode: Int
+    ):Call<List<items>>
 }

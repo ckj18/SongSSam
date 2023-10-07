@@ -50,7 +50,6 @@ class AIFragment : Fragment(), SongsClick {
     private fun initSongsRecyclerView() {
         if(GlobalApplication.prefs.getString("chooseSong","").equals("")){
             Log.d("ai","if")
-            binding.nsv.visibility = GONE
             binding.beforeChooseSong.visibility = VISIBLE
             binding.afterChooseSong.visibility = GONE
             binding.btnChooseSong.setOnClickListener {
@@ -59,31 +58,17 @@ class AIFragment : Fragment(), SongsClick {
             }
         } else {
             Log.d("ai","else")
-            binding.nsv.visibility = GONE
             binding.beforeChooseSong.visibility = GONE
             binding.afterChooseSong.visibility = VISIBLE
-            binding.songsRv.layoutManager =
+
+            binding.recordableRv.layoutManager =
                 LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
             songadApter = SongsAdapter(songList, this)
-            binding.songsRv.adapter = songadApter
+            binding.recordableRv.adapter = songadApter
         }
     }
 
-
-    override fun SongsClick(
-        title: String,
-        image: String
-    ) {
-        Thread(kotlinx.coroutines.Runnable {
-            mainActivity.runOnUiThread {
-                binding.powerTitle.text = title
-                Glide.with(binding.root).load(image).into(binding.powerImage)
-                binding.powerMenu.isVisible = true
-                binding.powerMenu.isClickable = true
-                binding.powerMenuBackground.isClickable = true
-                binding.powerMenuBackground.isVisible = true
-            }
-        }).start()
+    override fun SongsClick(title: String, image: String) {
+        TODO("Not yet implemented")
     }
-
 }

@@ -9,16 +9,15 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.songssam.API.SongSSamAPI.items
 import com.example.songssam.R
-import com.example.songssam.data.SelectedItem
-import com.example.songssam.data.items
 
 class itemAdapter(private var itemlist: MutableList<items>, private val selectionChangeListener: SelectionChangeListener) :
     RecyclerView.Adapter<itemAdapter.TaskViewHolder>() {
-    private var selectedItemList = mutableListOf<SelectedItem>()
+    private var selectedItemList = mutableListOf<Long>()
 
     interface SelectionChangeListener {
-        fun onSelectionChanged(selectedItems: List<SelectedItem>)
+        fun onSelectionChanged(selectedItems: List<Long>)
     }
 
     // Create new views (invoked by the layout manager)
@@ -36,11 +35,11 @@ class itemAdapter(private var itemlist: MutableList<items>, private val selectio
         holder.title.text = item.title
         Glide.with(holder.itemView).load(item.coverImage).into(holder.coverImage)
 
-        holder.checked.isVisible = selectedItemList.contains(SelectedItem(item.songID, item.title, item.artist))
+        holder.checked.isVisible = selectedItemList.contains(item.songID)
 
         holder.touch.setOnClickListener {
-            if (selectedItemList.contains(SelectedItem(item.songID, item.title, item.artist))) {
-                selectedItemList.remove(SelectedItem(item.songID, item.title, item.artist))
+            if (selectedItemList.contains(item.songID)) {
+                selectedItemList.remove(item.songID)
                 holder.checked.isVisible = false
                 item.selected = false
             } else if (selectedItemList.size == 10) {
@@ -48,7 +47,7 @@ class itemAdapter(private var itemlist: MutableList<items>, private val selectio
             } else {
                 item.selected = true
                 holder.checked.isVisible = true
-                selectedItemList.add(SelectedItem(item.songID, item.title, item.artist))
+                selectedItemList.add(item.songID)
             }
             selectionChangeListener.onSelectionChanged(selectedItemList)
         }

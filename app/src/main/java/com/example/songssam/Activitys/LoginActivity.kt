@@ -7,9 +7,9 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.songssam.API.loginAPI.jwt
-import com.example.songssam.API.loginAPI.songssamAPI
-import com.example.songssam.API.loginAPI.user
+import com.example.songssam.API.SongSSamAPI.jwt
+import com.example.songssam.API.SongSSamAPI.songssamAPI
+import com.example.songssam.API.SongSSamAPI.user
 import com.example.songssam.Activitys.GlobalApplication.Companion.prefs
 import com.example.songssam.R
 import com.kakao.sdk.auth.model.OAuthToken

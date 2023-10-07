@@ -2,32 +2,42 @@ package com.example.songssam.Activitys
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.songssam.API.SongSSamAPI.items
+import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.R
 import com.example.songssam.adapter.itemAdapter
-import com.example.songssam.data.SelectedItem
-import com.example.songssam.data.items
+import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
-class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListener{
+class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListener {
 
 
     private val btn: AppCompatButton by lazy {
         findViewById(R.id.btn)
     }
     private var itemList = mutableListOf<items>()
+    private lateinit var selectedList: List<Long>
     private val recyclerView: RecyclerView by lazy {
         findViewById(R.id.rv)
     }
@@ -63,12 +73,50 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
     }
 
 
-
     private fun initBTN() {
         btn.setOnClickListener {
-            val intent = Intent(this,MainActivity::class.java)
-            GlobalApplication.prefs.setString("chooseSong","done")
-            startActivity(intent)
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://songssam.site:8443")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(
+                    OkHttpClient.Builder()
+                        .readTimeout(
+                            30,
+                            TimeUnit.SECONDS
+                        )
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .build()
+                )
+                .build()
+
+            val apiService = retrofit.create(songssamAPI::class.java)
+            val accessToken = "Bearer " + GlobalApplication.prefs.getString("accessToken", "")
+
+            val call = apiService.updateFavoriteSong(accessToken, selectedList)
+            call.enqueue(object : Callback<Void> { // Use Callback<Void> as the callback type
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    // Handle failure here
+                    Log.d("updateFavoriteSong", t.stackTraceToString())
+                    Toast.makeText(
+                        this@ChooseSongActivity,
+                        "네트워크 오류와 같은 이유로 오류 발생!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        val intent = Intent(this@ChooseSongActivity, MainActivity::class.java)
+                        GlobalApplication.prefs.setString("chooseSong", "done")
+                        startActivity(intent)
+                    } else {
+                        // Handle non-successful response here
+                        Toast.makeText(this@ChooseSongActivity, "서버가 닫혀있습니다!", Toast.LENGTH_LONG)
+                            .show()
+                        Log.d("updateFavoriteSong", "연결 실패")
+                    }
+                }
+            })
         }
     }
 
@@ -91,25 +139,25 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
             크롤링 하는 법 : class 는 .(class) 로 찾고 id 는 #(id) 로 검색
              */
             for (elements in elements) {  //elements의 개수만큼 반복
-                val songID = elements.attr("data-song-no")
+                val songID = elements.attr("data-song-no").toLong()
                 val coverImage = elements.select(".image_typeAll img").attr("src")
                 val title = removeBracket(elements.select(".wrap_song_info .rank01 span a").text())
                 val artist = elements.select(".wrap_song_info .rank02 span").text()
                 itemList.add(
                     items(
-                        songID, coverImage, title, artist,false
+                        songID, coverImage, title, artist, false
                     )
                 )     //위에서 크롤링 한 내용들을 itemlist에 추가
             }
             elements = doc.select(".lst100")
             for (elements in elements) {  //elements의 개수만큼 반복
-                val songID = elements.attr("data-song-no")
+                val songID = elements.attr("data-song-no").toLong()
                 val coverImage = elements.select(".image_typeAll img").attr("src")
                 val title = removeBracket(elements.select(".wrap_song_info .rank01 span a").text())
                 val artist = elements.select(".wrap_song_info .rank02 span").text()
                 itemList.add(
                     items(
-                        songID, coverImage, title, artist,false
+                        songID, coverImage, title, artist, false
                     )
                 )     //위에서 크롤링 한 내용들을 itemlist에 추가
             }
@@ -119,34 +167,87 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
         }).start()
     }
 
-    override fun onSelectionChanged(selectedItems: List<SelectedItem>) {
+    override fun onSelectionChanged(selectedItems: List<Long>) {
         // Update the TextView in your activity with the current selected items count
         val textView: TextView = findViewById(R.id.textView1)
         textView.text = "선호하는 곡 10곡 선택  ( ${selectedItems.size} / 10 )"
+        selectedList = selectedItems
 
         // Enable or disable the button based on the number of selected items
         btn.isClickable = selectedItems.size == 10
     }
 
     private fun searchSong() {
-        var itemlist: ArrayList<items> = ArrayList()
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        val searchView = findViewById<SearchView>(R.id.search)
+        val searchAutoComplete: SearchView.SearchAutoComplete =
+            searchView.findViewById(androidx.appcompat.R.id.search_src_text)
+
+        searchAutoComplete.setTextColor(Color.BLACK)
+        searchAutoComplete.setHintTextColor(Color.BLACK)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query!=null){
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://songssam.site:8443")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(
+                        OkHttpClient.Builder()
+                            .readTimeout(
+                                30,
+                                TimeUnit.SECONDS
+                            ) // Adjust the timeout as needed
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .build()
+                    )
+                    .build()
+                val apiService = retrofit.create(songssamAPI::class.java)
+                val call = apiService.search(query!!, 0)
+                call.enqueue(object : Callback<List<items>> {
+                    override fun onResponse(
+                        call: Call<List<items>>,
+                        response: Response<List<items>>
+                    ) {
+                        if (response.isSuccessful.not()) {
+                            Toast.makeText(
+                                this@ChooseSongActivity,
+                                "서버가 닫혀있습니다!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            Log.d("login", "연결 실패")
+                            return
+                        }
+                        Log.d("login", "로그인 연결 성공")
+                        try {
+                            itemList = response.body()?.toMutableList() ?: mutableListOf()
+                            Thread(Runnable {
+                                runOnUiThread {
+                                    initRecyclerView(itemList)
+                                }
+                            }).start()
+                        } catch (e: Exception) {
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<items>>, t: Throwable) {
+                        Log.d("retrofit", t.stackTraceToString())
+                        Toast.makeText(
+                            this@ChooseSongActivity,
+                            "네트워크 오류와 같은 이유로 오류 발생!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        // 네트워크 오류 등 호출 실패 시 처리
+                    }
+                })
+                }
+                return true
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                dynamicClawling(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                TODO("검색이 내용이 없으면 그냥 Top100 크롤링 해서 시각화")
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
             }
         })
     }
 
-    private fun dynamicClawling(text: String) {
-        //TODO 동적 크롤링을 통해 검색 글자를 통해 관련 노래 제목, 가수, 커버 이미지를 크롤링
-    }
 
     private fun removeBracket(text: String): String {
         if (text.indexOf("(") !== -1) {

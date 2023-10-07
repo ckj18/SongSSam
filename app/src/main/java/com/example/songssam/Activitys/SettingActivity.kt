@@ -1,5 +1,6 @@
 package com.example.songssam.Activitys
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.ActionBar
@@ -8,11 +9,11 @@ import com.example.songssam.R
 
 class SettingActivity : AppCompatActivity() {
 
-    private val logout_container : ConstraintLayout by lazy {
+    private val logoutContainer : ConstraintLayout by lazy {
         findViewById(R.id.logout_container)
     }
 
-    private val delete_account_container : ConstraintLayout by lazy {
+    private val deleteAccountContainer : ConstraintLayout by lazy {
         findViewById(R.id.delete_account_container)
     }
 
@@ -31,13 +32,14 @@ class SettingActivity : AppCompatActivity() {
     }
 
     private fun initDeleteAccountClick() {
-        logout_container.setOnClickListener {
-
+        logoutContainer.setOnClickListener {
+            GlobalApplication.prefs.setString("accessToken","")
+            startActivity(Intent(this@SettingActivity,LoginActivity::class.java))
         }
     }
 
     private fun initLogoutClick() {
-        delete_account_container.setOnClickListener {
+        deleteAccountContainer.setOnClickListener {
 
         }
     }

@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.songssam.API.loginAPI.songssamAPI
-import com.example.songssam.API.loginAPI.user
+import com.example.songssam.API.SongSSamAPI.songssamAPI
+import com.example.songssam.API.SongSSamAPI.user
 import com.example.songssam.Activitys.GlobalApplication.Companion.prefs
 import com.example.songssam.R
 import com.kakao.sdk.common.util.Utility

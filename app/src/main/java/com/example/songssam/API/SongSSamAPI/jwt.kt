@@ -1,9 +1,15 @@
-package com.example.songssam.API.loginAPI
+package com.example.songssam.API.SongSSamAPI
 
 import com.google.gson.annotations.SerializedName
 
 
-
+data class items(
+    @SerializedName("id")val songID : Long,
+    @SerializedName("imgUrl")val coverImage : String,
+    @SerializedName("title")val title : String,
+    @SerializedName("artist")val artist : String,
+    var selected : Boolean = false
+)
 data class jwt(
     @SerializedName("response")val jwt : tokens
 )

@@ -6,7 +6,8 @@
     android:layout_width="135dp"
     android:layout_height="190dp"
     app:neumorph_backgroundColor="@color/gray"
-    app:neumorph_shapeType="flat">
+    app:neumorph_shapeType="flat"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/itemView"

@@ -53,163 +53,50 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.core.widget.NestedScrollView
                 android:id="@+id/afterChooseSong"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    android:id="@+id/text2"
-                    android:layout_marginBottom="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:text="선호하는 곡을 고르는 작업을 완료했습니다!!\n추천 알고리즘을 통해 리스트를 받아오는 API 개발 중 입니다!"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nsv"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
+                    <TextView
+                        android:layout_marginTop="20dp"
+                        android:id="@+id/textView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="15분 이상의 녹음 필요"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black" />
+                    <TextView
+                        app:layout_constraintTop_toBottomOf="@id/textView1"
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="15dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="AI cover 생성을 위한 음성 데이터 수집"
+                        android:textColor="@color/black" />
+
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/songs_rv"
+                        android:id="@+id/recordable_rv"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/pressed_card"/>                  </LinearLayout>
-
+                        android:layout_marginEnd="10dp" />
+                </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
-            <FrameLayout
-                android:id="@+id/powerMenuBackground"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#80000000"
-                android:clickable="true"
-                android:focusable="true"
-                android:visibility="gone" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/powerMenu"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="30dp"
-                android:background="@drawable/rounded_rectangle_background"
-                android:elevation="5dp"
-                android:padding="20dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="true">
-
-                <TextView
-                    android:id="@+id/power_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="기사 제목"
-                    android:textColor="@color/black"
-                    android:textSize="24dp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/power_press"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="언론사"
-                    android:textColor="@color/black"
-                    android:textSize="15dp"
-                    android:textStyle=""
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/power_title" />
-
-                <ImageView
-                    android:id="@+id/power_image"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:layout_marginTop="13dp"
-                    android:src="@drawable/music_note"
-                    app:civ_border_color="@color/white"
-                    app:civ_border_width="2dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/power_press" />
-
-                <TextView
-                    android:id="@+id/power_sum"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:gravity="start"
-                    android:lineSpacingExtra="2dp"
-                    android:maxLines="13"
-                    android:text="본문 내용"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/power_image" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/power_close"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
-                    android:background="@drawable/btn_blue"
-                    android:text="닫기"
-                    android:textColor="@color/white"
-                    android:textSize="17dp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/power_readMore"
-                    app:layout_constraintTop_toBottomOf="@id/power_sum" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/power_readMore"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/btn_blue"
-                    android:text="본문 읽기"
-                    android:textColor="@color/white"
-                    android:textSize="17dp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@id/power_close"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/power_sum" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -9,9 +9,9 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.songssam.API.SongSSamAPI.items
 import com.example.songssam.R
 import com.example.songssam.data.SelectedItem
-import com.example.songssam.data.items
 
 class RecordingItemAdapter(private var itemlist: MutableList<items>, private val selectionChangeListener: RecordingItemAdapter.SelectionChangeListener) :
     RecyclerView.Adapter<RecordingItemAdapter.TaskViewHolder>() {

@@ -5,7 +5,7 @@ import java.util.*
 
 class SelectedItem
     (
-    val songID: String, val title: String, val artist: String
+    val songID: Long, val title: String, val artist: String
 
 ) {
     override fun equals(other: Any?): Boolean {
