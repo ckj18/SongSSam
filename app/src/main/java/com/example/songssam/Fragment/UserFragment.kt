@@ -17,6 +17,7 @@ import com.example.songssam.Activitys.ChooseSongActivity
 import com.example.songssam.Activitys.GlobalApplication.Companion.prefs
 import com.example.songssam.Activitys.MainActivity
 import com.example.songssam.Activitys.RecordingActivity
+import com.example.songssam.Activitys.SettingActivity
 import com.example.songssam.databinding.FragmentUserBinding
 
 /**
@@ -38,8 +39,16 @@ class UserFragment : Fragment() {
         initInfo()
         initChooseSongBTN()
         initRecordingBTN()
+        initSettingBTN()
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun initSettingBTN() {
+        binding.settingContainer.setOnClickListener {
+            val intent = Intent(getActivity(), SettingActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun initChooseSongBTN() {
