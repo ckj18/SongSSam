@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
         if(accesstokenInfo.equals("").not()){
             Log.d("check", accesstokenInfo)
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://songssam.site:8080")
+                .baseUrl("https://songssam.site:8443")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(
                     OkHttpClient.Builder()
@@ -119,7 +119,7 @@ class LoginActivity : AppCompatActivity() {
                     } else if (token != null) {
                         Log.i("login", "카카오톡으로 로그인 성공 ${token.accessToken}")
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://songssam.site:8080")
+                            .baseUrl("https://songssam.site:8443")
                             .addConverterFactory(GsonConverterFactory.create())
                             .client(
                                 OkHttpClient.Builder()

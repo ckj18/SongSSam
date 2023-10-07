@@ -66,7 +66,8 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
 
     private fun initBTN() {
         btn.setOnClickListener {
-            val intent = Intent(this,RecordingActivity::class.java)
+            val intent = Intent(this,MainActivity::class.java)
+            GlobalApplication.prefs.setString("chooseSong","done")
             startActivity(intent)
         }
     }

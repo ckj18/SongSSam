@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/profile_image"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/progress_container">
+            app:layout_constraintEnd_toStartOf="@id/record_container">
 
             <ImageView
                 android:id="@+id/favorite_song"
@@ -73,11 +73,42 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/progress_container"
+            android:id="@+id/record_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/favorite_song_container"
             app:layout_constraintStart_toEndOf="@id/favorite_song_container"
+            app:layout_constraintEnd_toStartOf="@id/progress_container">
+
+            <ImageView
+                android:layout_marginTop="10dp"
+                android:id="@+id/record"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/microphone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="녹음하기"
+                android:textColor="@color/black"
+                android:textSize="17dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/record"
+                app:layout_constraintStart_toStartOf="@id/record"
+                app:layout_constraintTop_toBottomOf="@id/record" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/progress_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/favorite_song_container"
+            app:layout_constraintStart_toEndOf="@id/record_container"
             app:layout_constraintEnd_toStartOf="@id/setting_container">
 
             <ImageView

@@ -114,6 +114,7 @@ class RecordingActivity : AppCompatActivity() {
         initPauseBTN()
         initResetBTN()
         initSuccessBTN()
+
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -127,28 +128,11 @@ class RecordingActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeline() {
-        // 검은 라인 뷰 생성
-        val line = View(this)
-        line.setBackgroundColor(resources.getColor(R.color.black)) // 색상 설정
-
-        val containerWidth = container.width // 컨테이너의 너비
-
-        // 뷰를 컨테이너에 추가
-        val lineWidth = 1 // 사각형의 너비
-        val lineHeight = container.height // 사각형의 높이
-        val params = FrameLayout.LayoutParams(lineWidth, lineHeight)
-        params.leftMargin = (containerWidth - lineWidth) / 2 // 컨테이너 가운데에서 시작
-
-        container.addView(line, params)
-    }
-
     private fun initResetBTN() {
         reset_btn.setOnClickListener {
             mediaPlayer.reset()
         }
     }
-
 
     private fun initSuccessBTN() {
         success_btn.setOnClickListener {
@@ -182,7 +166,6 @@ class RecordingActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         // Check if both permissions are granted
         val audioPermissionGranted =
             grantResults.contains(PackageManager.PERMISSION_GRANTED)
@@ -302,16 +285,13 @@ class RecordingActivity : AppCompatActivity() {
         val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         val octave = noteNumber / 12 + 1
         val noteName = noteNames[noteNumber % 12]
-
-
+        
         Thread {
             runOnUiThread {
                 if (octave >= 2) {
                     startAnimation(noteNumber - 12)
                     Log.d("record", noteNumber.toString())
                 }
-
-
             }
         }.start()
         return "$noteName$octave"
@@ -319,11 +299,9 @@ class RecordingActivity : AppCompatActivity() {
 
 
     private fun startAnimation(pitchInHz: Int) {
-
-        makeline()
-        // 빨간 사각형 뷰 생성
-        val redSquare = View(this)
-        redSquare.setBackgroundColor(resources.getColor(R.color.red)) // 색상 설정
+        // 하얀 사각형 뷰 생성
+        val whiteSquare = View(this)
+        whiteSquare.setBackgroundColor(resources.getColor(R.color.white)) // 색상 설정
 
         // 뷰를 컨테이너에 추가
         val containerWidth = container.width // 컨테이너의 너비
@@ -331,12 +309,11 @@ class RecordingActivity : AppCompatActivity() {
         val squareWidth = 10 // 사각형의 너비
         val squareHeight = 10 // 사각형의 높이
         val params = FrameLayout.LayoutParams(squareWidth, squareHeight)
-
         var note = if (pitchInHz > 72) 72
         else pitchInHz
         params.leftMargin = (containerWidth - squareWidth) / 2 // 컨테이너 가운데에서 시작
         params.topMargin = (containerHeight - squareHeight) * (72 - note) / 72 // C2부터 B7까지
-        container.addView(redSquare, params)
+        container.addView(whiteSquare, params)
 
         // TranslateAnimation 생성 및 설정
         val animation = TranslateAnimation(0f, -container.width.toFloat(), 0f, 0f)
@@ -344,25 +321,22 @@ class RecordingActivity : AppCompatActivity() {
         animation.fillAfter = true // 애니메이션 종료 후 위치 고정
         animation.interpolator = LinearInterpolator()
 
-
         // 애니메이션 리스너 추가 (애니메이션이 끝나면 뷰 제거)
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
                 // 애니메이션 시작 시 필요한 작업
             }
-
             override fun onAnimationEnd(animation: Animation?) {
                 // 애니메이션 종료 시 필요한 작업
-                container.removeView(redSquare) // 뷰 제거
+                container.removeView(whiteSquare) // 뷰 제거
             }
-
             override fun onAnimationRepeat(animation: Animation?) {
                 // 애니메이션 반복 시 필요한 작업
             }
         })
 
         // 애니메이션 시작
-        redSquare.startAnimation(animation)
+        whiteSquare.startAnimation(animation)
     }
 
     companion object {

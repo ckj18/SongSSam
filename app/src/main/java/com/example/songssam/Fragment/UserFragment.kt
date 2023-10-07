@@ -1,20 +1,22 @@
-package com.example.songssam.Activitys
+package com.example.songssam.Fragment
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.songssam.Activitys.ChooseSongActivity
 import com.example.songssam.Activitys.GlobalApplication.Companion.prefs
-import com.example.songssam.R
+import com.example.songssam.Activitys.MainActivity
+import com.example.songssam.Activitys.RecordingActivity
 import com.example.songssam.databinding.FragmentUserBinding
 
 /**
@@ -34,8 +36,24 @@ class UserFragment : Fragment() {
     ): View? {
         binding = FragmentUserBinding.inflate(inflater, container, false)
         initInfo()
+        initChooseSongBTN()
+        initRecordingBTN()
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun initChooseSongBTN() {
+        binding.favoriteSongContainer.setOnClickListener {
+            val intent = Intent(getActivity(), ChooseSongActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun initRecordingBTN() {
+        binding.recordContainer.setOnClickListener {
+            val intent = Intent(getActivity(), RecordingActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun initInfo() {

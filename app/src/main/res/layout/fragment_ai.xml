@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,44 +14,93 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#f4f6f8">
-
-            <TextView
-                android:textAlignment="center"
-                android:gravity="center"
-                android:id="@+id/text"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/beforeChooseSong"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:text="사용자의 목소리를 이용해 AI로 생성된 곡들이 없습니다.\n목소리를 학습시키고 생성할 곡을 선택해주세요!😊"
-                android:textColor="@color/black"
-                android:visibility="gone"
-                android:textSize="20dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <androidx.core.widget.NestedScrollView
-                    android:id="@+id/nsv"
+                <TextView
+                    android:id="@+id/text"
+                    android:layout_marginBottom="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:text="선호하는 곡들을 선택해 주세요!\n추천 알고리즘으로 녹음가능한 곡들을 보여드리겠습니다!😊"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_chooseSong"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="선호 곡 선택하기"
+                    android:textSize="20dp"
+                    android:background="@drawable/btn_blue"
+                    android:textColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@id/text"
+                    app:layout_constraintStart_toStartOf="@id/text"
+                    app:layout_constraintEnd_toEndOf="@id/text"
+                    android:layout_margin="30dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/afterChooseSong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/text2"
+                    android:layout_marginBottom="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:text="선호하는 곡을 고르는 작업을 완료했습니다!!\n추천 알고리즘을 통해 리스트를 받아오는 API 개발 중 입니다!"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="0dp"
+                    android:orientation="vertical">
 
-                    <LinearLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/songs_rv"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/pressed_card"/>                  </LinearLayout>
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/songs_rv"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/pressed_card"/>                  </LinearLayout>
-
-                </androidx.core.widget.NestedScrollView>
+            </androidx.core.widget.NestedScrollView>
 
             <FrameLayout
                 android:id="@+id/powerMenuBackground"

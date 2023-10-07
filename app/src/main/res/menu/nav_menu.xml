@@ -8,6 +8,12 @@
         android:title="홈"/>
 
     <item
+        android:id="@+id/record"
+        android:icon="@drawable/voice"
+        android:enabled="true"
+        android:title="녹음"/>
+
+    <item
         android:id="@+id/user"
         android:icon="@drawable/account_icon"
         android:enabled="true"
