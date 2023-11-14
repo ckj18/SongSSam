@@ -23,19 +23,24 @@
         tools:targetApi="31">
         <activity
             android:name=".Activitys.SettingActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="false" />
         <activity
             android:name=".Activitys.ProgressActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="false" />
         <activity
             android:name=".Activitys.MainActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="false" />
         <activity
             android:name=".Activitys.RecordingActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="false"
             android:label="Recording" />
         <activity
             android:name=".Activitys.ChooseSongActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="false"
             android:label="Collecting Sample data" />
         <activity
@@ -54,6 +59,7 @@
         </activity>
         <activity
             android:name=".Activitys.SplashActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -65,7 +65,7 @@ class AddSongAdapter(private var itemlist: MutableList<chartjsonItems>, private 
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = itemlist.siz///////////////////////////////////////////e
+    override fun getItemCount() = itemlist.size
 
     class TaskViewHolder(todoTaskView: View) : RecyclerView.ViewHolder(todoTaskView) {
         val title: TextView = todoTaskView.findViewById(R.id.title)
