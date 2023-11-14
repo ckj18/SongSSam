@@ -14,87 +14,123 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#f4f6f8">
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/beforeChooseSong"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/text"
-                    android:layout_marginBottom="30dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:textAlignment="center"
+                    android:layout_marginBottom="30dp"
                     android:gravity="center"
                     android:text="선호하는 곡들을 선택해 주세요!\n추천 알고리즘으로 녹음가능한 곡들을 보여드리겠습니다!😊"
+                    android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="20dp"/>
+                    android:textSize="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_chooseSong"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="선호 곡 선택하기"
-                    android:textSize="20dp"
+                    android:layout_margin="30dp"
                     android:background="@drawable/btn_blue"
+                    android:text="선호 곡 선택하기"
                     android:textColor="@color/white"
-                    app:layout_constraintTop_toBottomOf="@id/text"
-                    app:layout_constraintStart_toStartOf="@id/text"
+                    android:textSize="20dp"
                     app:layout_constraintEnd_toEndOf="@id/text"
-                    android:layout_margin="30dp"/>
+                    app:layout_constraintStart_toStartOf="@id/text"
+                    app:layout_constraintTop_toBottomOf="@id/text" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/afterChooseSong"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/gray"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_marginTop="20dp"
-                        android:id="@+id/textView1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="15분 이상의 녹음 필요"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
-                    <TextView
-                        app:layout_constraintTop_toBottomOf="@id/textView1"
-                        android:id="@+id/textView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="15dp"
-                        android:layout_marginBottom="10dp"
-                        android:text="AI cover 생성을 위한 음성 데이터 수집"
-                        android:textColor="@color/black" />
+                    tools:context=".Activitys.ChooseSongActivity">
 
+
+                    <soup.neumorphism.NeumorphCardView
+                        android:id="@+id/pressed_card"
+                        style="@style/Widget.Neumorph.CardView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:neumorph_shapeType="pressed">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:id="@+id/textView1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="15분 이상 녹음 진행"
+                                android:textColor="@color/black"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:gravity="center"
+                                android:text="AI Cover 생성을 위한 음성 데이터 수집을 위한 과정입니다."
+                                android:textColor="@color/black"
+                                android:textSize="15dp" />
+
+                            <androidx.appcompat.widget.SearchView
+                                android:id="@+id/search"
+                                android:layout_width="320dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/edittext_rounded_circle"
+                                android:gravity="center"
+                                android:textSize="15dp"
+                                app:queryHint="녹음가능한 곡 검색" />
+                        </LinearLayout>
+                    </soup.neumorphism.NeumorphCardView>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recordable_rv"
+                        android:id="@+id/rv"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp" />
-                </LinearLayout>
+                        android:numColumns="3"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/pressed_card"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

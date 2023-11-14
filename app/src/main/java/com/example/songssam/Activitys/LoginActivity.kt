@@ -30,7 +30,11 @@ class LoginActivity : AppCompatActivity() {
         if (error != null) {
             Log.e("login", "카카오계정으로 로그인 실패", error)
         } else if (token != null) {
-            startActivity(Intent(this@LoginActivity, ChooseSongActivity::class.java))
+            Toast.makeText(
+                this@LoginActivity,
+                "카카오톡 앱의 설치되어 있지만, 로그인이 되어 있지 않아요!",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
     private val kakaoLoginButton: ImageView by lazy {
@@ -154,13 +158,10 @@ class LoginActivity : AppCompatActivity() {
                                     "login",
                                     "refreshToken : " + refreshToken + "\n" + "accessToken : " + accessToken
                                 )
-
                                 accessToken?.let { it1 -> prefs.setString("accessToken", it1) }
                                 refreshToken?.let { it1 -> prefs.setString("refreshToken", it1) }
-
                                 checkKakaoAccessToken()
                             }
-
                             override fun onFailure(call: Call<jwt>, t: Throwable) {
                                 Log.d("retrofit", t.stackTraceToString())
                                 Toast.makeText(

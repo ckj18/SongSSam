@@ -2,7 +2,13 @@ package com.example.songssam.API.SongSSamAPI
 
 import com.google.gson.annotations.SerializedName
 
-
+data class chartjsonItems(
+    @SerializedName("id")val songID : Long,
+    @SerializedName("imgUrl")val coverImage : String,
+    @SerializedName("title")val title : String,
+    @SerializedName("artist")val artist : String,
+    @SerializedName("status")var status : String?,
+)
 data class items(
     @SerializedName("id")val songID : Long,
     @SerializedName("imgUrl")val coverImage : String,

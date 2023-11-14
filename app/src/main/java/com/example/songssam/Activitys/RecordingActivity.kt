@@ -2,8 +2,10 @@ package com.example.songssam.Activitys
 
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
@@ -16,26 +18,32 @@ import android.view.animation.TranslateAnimation
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
 import be.tarsos.dsp.AudioDispatcher
-import be.tarsos.dsp.AudioEvent
+import be.tarsos.dsp.AudioProcessor
 import be.tarsos.dsp.io.TarsosDSPAudioFormat
-import be.tarsos.dsp.io.UniversalAudioInputStream
-import be.tarsos.dsp.io.android.AndroidAudioPlayer
 import be.tarsos.dsp.io.android.AudioDispatcherFactory
 import be.tarsos.dsp.pitch.PitchDetectionHandler
-import be.tarsos.dsp.pitch.PitchDetectionResult
 import be.tarsos.dsp.pitch.PitchProcessor
 import be.tarsos.dsp.writer.WriterProcessor
+import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.R
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.ByteOrder
 import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 
 class RecordingActivity : AppCompatActivity() {
@@ -45,13 +53,11 @@ class RecordingActivity : AppCompatActivity() {
         RECORD_AUDIO, WRITE_EXTERNAL_STORAGE,
         READ_EXTERNAL_STORAGE
     )
-
     lateinit var dispatcher: AudioDispatcher
     lateinit var tarsosDSPAudioFormat: TarsosDSPAudioFormat
     lateinit var mediaPlayer: MediaPlayer
     private lateinit var file: File // Declare the file variable
-
-    var isRecording = false
+    private var isRecording = false
 
     var dictionary = HashMap<Double, String>()
 
@@ -67,9 +73,6 @@ class RecordingActivity : AppCompatActivity() {
     private val play_btn: soup.neumorphism.NeumorphFloatingActionButton by lazy {
         findViewById(R.id.play_btn)
     }
-    private val pause_btn: soup.neumorphism.NeumorphFloatingActionButton by lazy {
-        findViewById(R.id.pause_btn)
-    }
     private val success_btn: soup.neumorphism.NeumorphButton by lazy {
         findViewById(R.id.success_btn)
     }
@@ -82,6 +85,7 @@ class RecordingActivity : AppCompatActivity() {
     private val container: FrameLayout by lazy {
         findViewById(R.id.perfect_score)
     }
+    private val storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +102,6 @@ class RecordingActivity : AppCompatActivity() {
         mediaPlayer = MediaPlayer.create(this@RecordingActivity, R.raw.everything_black)
         title.text = "Everything Black"
 
-        val storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
         file = File(storageDir, "recorded_audio.wav")
 
         tarsosDSPAudioFormat = TarsosDSPAudioFormat(
@@ -109,93 +112,50 @@ class RecordingActivity : AppCompatActivity() {
             2 * 1,
             22050F,
             ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder())
-        );
-        initPlayBTN()
-        initPauseBTN()
+        )
+        val wavfile = File(
+            storageDir, String.format(
+                "W%s.wav",
+                SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            )
+        )
+        try {
+            val wfile: RandomAccessFile = RandomAccessFile(wavfile, "rw")
+            val p1: AudioProcessor = WriterProcessor(tarsosDSPAudioFormat, wfile)
+            dispatcher.addAudioProcessor(p1)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        initRecordingBTN()
         initResetBTN()
         initSuccessBTN()
-
     }
 
-    @SuppressLint("NonConstantResourceId")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.getItemId()) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun initResetBTN() {
-        reset_btn.setOnClickListener {
-            mediaPlayer.reset()
-        }
-    }
-
-    private fun initSuccessBTN() {
-        success_btn.setOnClickListener {
-            //TODO("녹음 완료 후 클릭 시 다음 엑티비티 전환")
-        }
-    }
-
-    private fun initPlayBTN() {
+    private fun initRecordingBTN() {
         play_btn.setOnClickListener {
-            Log.d("tag", "playButton click")
-            getRecordingAuth()
+            if (isRecording) {
+                //녹음되고 있을 떄
+                play_btn.setImageResource(R.drawable.record_round)
+                stopAudio()
+                stopRecording()
+                isRecording = false
+            } else {
+                //녹음하려할 떄
+                getRecordingAuth()
+                play_btn.setImageResource(R.drawable.stop)
+                playAudio()
+                recordAudio()
+                isRecording = true
+            }
         }
     }
 
-    private fun initPauseBTN() {
-        pause_btn.setOnClickListener {
-            Log.d("tag", "pauseButton click")
-            stopAudio()
-            stopRecording()
-            isRecording = false
-        }
-    }
-
-    private fun getRecordingAuth() {
-        requestPermissions(this, requiredPermissions, REQUEST_RECORD_AUDIO_PERMISSION)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // Check if both permissions are granted
-        val audioPermissionGranted =
-            grantResults.contains(PackageManager.PERMISSION_GRANTED)
-
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION && audioPermissionGranted) {
-            // Both permissions are granted, proceed with recording and file access.
-            Log.d("record", "Both permissions granted")
-            playAudio()
-            recordAudio()
-            isRecording = true
-        } else {
-            // Permissions not granted, show a permission context popup.
-            Log.d("record", "Permission not granted")
-            showPermissionContextPopup()
-        }
-    }
-
-
-    fun stopAudio() {
-        Log.d("record", "stopAudio 실행")
-        play_btn.isClickable = true
-        pause_btn.isClickable = false
-        mediaPlayer.stop()
-        mediaPlayer = MediaPlayer.create(this@RecordingActivity, R.raw.everything_black)
+    fun stopRecording() {
+        dispatcher.stop()
     }
 
     fun playAudio() {
         Log.d("record", "playAudio 실행")
-        play_btn.isClickable = false
-        pause_btn.isClickable = true
         mediaPlayer.start()
         seekBar.visibility = View.VISIBLE   // 진행바 보이게
         // 음악 진행 상황을 스레드에서 표현
@@ -222,25 +182,79 @@ class RecordingActivity : AppCompatActivity() {
         }.start()   // end of Thread()
     }
 
-    fun recordAudio() {
+    private fun recordAudio() {
+        dispatcher.run()
+    }
+
+    private fun getOutputMediaFile(): String {
+        val mediaDir = File(Environment.getExternalStorageDirectory(), "MyRecordings")
+        if (!mediaDir.exists()) {
+            mediaDir.mkdirs()
+        }
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val mediaFile = File(mediaDir, "REC_$timeStamp.mp4")
+        Log.d("record", "녹음 저장")
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://songssam.site:8443")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(
+                        30,
+                        TimeUnit.SECONDS
+                    )
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            )
+            .build()
+
+        val apiService = retrofit.create(songssamAPI::class.java)
+        val accessToken = "Bearer " + GlobalApplication.prefs.getString("accessToken", "")
+        val call = apiService.uploadSong(accessToken, mediaFile, songId = 36518341)
+        call.enqueue(object : Callback<Void> { // Use Callback<Void> as the callback type
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Handle failure here
+                Log.d("updateFavoriteSong", t.stackTraceToString())
+                Toast.makeText(
+                    this@RecordingActivity,
+                    "네트워크 오류와 같은 이유로 오류 발생!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    val intent = Intent(this@RecordingActivity, MainActivity::class.java)
+                    GlobalApplication.prefs.setString("chooseSong", "done")
+                    startActivity(intent)
+                } else {
+                    // Handle non-successful response here
+                    Toast.makeText(this@RecordingActivity, "서버가 닫혀있습니다!", Toast.LENGTH_LONG)
+                        .show()
+                    Log.d("updateFavoriteSong", "연결 실패")
+                }
+            }
+        })
+        Log.d("record", "녹음 전송 완료")
+        return mediaFile.absolutePath
+    }
+
+    private fun TarsosDSP() {
         Log.d("record", "recordAudio 실행")
         val start = System.currentTimeMillis()
-        releaseDispatcher()
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
         try {
             val randomAccessFile = RandomAccessFile(file, "rw")
             val recordProcessor = WriterProcessor(tarsosDSPAudioFormat, randomAccessFile)
             dispatcher.addAudioProcessor(recordProcessor)
-            val pitchDetectionHandler = object : PitchDetectionHandler {
-                override fun handlePitch(res: PitchDetectionResult, e: AudioEvent) {
-                    val pitchInHz = res.pitch
-                    var octav = ProcessPitch(pitchInHz) // pitch -> note
-                    runOnUiThread {
-                        pitch.setText(octav)
-                        val end = System.currentTimeMillis() // note가 입력된 시간 가져오기(일반시각)
-                        val time = (end - start) / 1000.0 // 녹음이 시작된 이후의 시간으로 변경
-                        dictionary.put(time, octav) // hashmap에 <time, note> 입력
-                    }
+            val pitchDetectionHandler = PitchDetectionHandler { res, e ->
+                val pitchInHz = res.pitch
+                var octav = ProcessPitch(pitchInHz) // pitch -> note
+                runOnUiThread {
+                    pitch.setText(octav)
+                    val end = System.currentTimeMillis() // note가 입력된 시간 가져오기(일반시각)
+                    val time = (end - start) / 1000.0 // 녹음이 시작된 이후의 시간으로 변경
+                    dictionary.put(time, octav) // hashmap에 <time, note> 입력
                 }
             }
             val pitchProcessor =
@@ -258,15 +272,61 @@ class RecordingActivity : AppCompatActivity() {
         }
     }
 
-    fun stopRecording() {
-        releaseDispatcher()
-    }
+    @SuppressLint("NonConstantResourceId")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.getItemId()) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
 
-    fun releaseDispatcher() {
-        if (::dispatcher.isInitialized) {
-            if (!dispatcher.isStopped) dispatcher.stop()
+            else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun initResetBTN() {
+        reset_btn.setOnClickListener {
+            mediaPlayer.reset()
+        }
+    }
+
+    private fun initSuccessBTN() {
+        success_btn.setOnClickListener {
+            //TODO("녹음 완료 후 클릭 시 다음 엑티비티 전환")
+        }
+    }
+
+    private fun getRecordingAuth() {
+        requestPermissions(this, requiredPermissions, REQUEST_RECORD_AUDIO_PERMISSION)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Check if both permissions are granted
+        val audioPermissionGranted =
+            grantResults.contains(PackageManager.PERMISSION_GRANTED)
+
+        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION && audioPermissionGranted) {
+            // Both permissions are granted, proceed with recording and file access.
+            Log.d("record", "Both permissions granted")
+            isRecording = true
+        } else {
+            // Permissions not granted, show a permission context popup.
+            Log.d("record", "Permission not granted")
+            showPermissionContextPopup()
+        }
+    }
+
+    fun stopAudio() {
+        Log.d("record", "stopAudio 실행")
+        mediaPlayer.stop()
+        mediaPlayer = MediaPlayer.create(this@RecordingActivity, R.raw.everything_black)
+    }
+
 
     private fun showPermissionContextPopup() {
         android.app.AlertDialog.Builder(this)
@@ -285,7 +345,7 @@ class RecordingActivity : AppCompatActivity() {
         val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         val octave = noteNumber / 12 + 1
         val noteName = noteNames[noteNumber % 12]
-        
+
         Thread {
             runOnUiThread {
                 if (octave >= 2) {
@@ -326,10 +386,12 @@ class RecordingActivity : AppCompatActivity() {
             override fun onAnimationStart(animation: Animation?) {
                 // 애니메이션 시작 시 필요한 작업
             }
+
             override fun onAnimationEnd(animation: Animation?) {
                 // 애니메이션 종료 시 필요한 작업
                 container.removeView(whiteSquare) // 뷰 제거
             }
+
             override fun onAnimationRepeat(animation: Animation?) {
                 // 애니메이션 반복 시 필요한 작업
             }

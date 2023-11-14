@@ -42,9 +42,6 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
         findViewById(R.id.rv)
     }
     private lateinit var adapter: itemAdapter
-    private val editText: EditText by lazy {
-        findViewById(R.id.search_edittext)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +49,8 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
         crawlingTop100(savedInstanceState)
         initBTN()
         searchSong()
-
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar) //액티비티의 앱바(App Bar)로 지정
-
         val actionBar: ActionBar? = supportActionBar //앱바 제어를 위해 툴바 액세스
         actionBar!!.setDisplayHomeAsUpEnabled(true) // 앱바에 뒤로가기 버튼 만들기
         actionBar?.setHomeAsUpIndicator(R.drawable.arrow_back) // 뒤로가기 버튼 색상 설정
@@ -88,7 +83,6 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
                         .build()
                 )
                 .build()
-
             val apiService = retrofit.create(songssamAPI::class.java)
             val accessToken = "Bearer " + GlobalApplication.prefs.getString("accessToken", "")
 

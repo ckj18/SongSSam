@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.songssam.API.SongSSamAPI.items
 import com.example.songssam.R
-
 class itemAdapter(private var itemlist: MutableList<items>, private val selectionChangeListener: SelectionChangeListener) :
     RecyclerView.Adapter<itemAdapter.TaskViewHolder>() {
     private var selectedItemList = mutableListOf<Long>()
