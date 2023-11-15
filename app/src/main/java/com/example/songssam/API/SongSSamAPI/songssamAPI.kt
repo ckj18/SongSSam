@@ -1,5 +1,7 @@
 package com.example.songssam.API.SongSSamAPI
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 import java.io.File
@@ -45,6 +47,14 @@ interface songssamAPI {
     fun chartJson(
     ):Call<List<chartjsonItems>>
 
+    @GET("/song/uploaded_list")
+    fun getUploadedList(
+    ):Call<List<chartjsonItems>>
+
+    @GET("/song/completed_list")
+    fun getCompletedList(
+    ):Call<List<chartjsonItems>>
+
     @Headers("accept: application/json",
         "content-type: application/json")
     @GET("/song/search")
@@ -52,12 +62,10 @@ interface songssamAPI {
         @Query("target") target: String,
         @Query("mode") mode: Int
     ):Call<List<chartjsonItems>>
-
-    @Headers("accept: application/json",
-        "content-type: application/json")
-    @GET("/song/upload")
+    @Multipart
+    @POST("/song/upload")
     fun uploadSongToRecord(
-        @Query("songId") songId: Long,
-        @Body file:File
+        @Part ("songId") songId: RequestBody,
+        @Part file:MultipartBody.Part
     ):Call<Void>
 }

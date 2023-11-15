@@ -4,45 +4,39 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.songssam.API.SongSSamAPI.chartjsonItems
-import com.example.songssam.API.SongSSamAPI.items
 import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.Activitys.ChooseSongActivity
 import com.example.songssam.Activitys.GlobalApplication
 import com.example.songssam.Activitys.MainActivity
 import com.example.songssam.Activitys.RecordingActivity
+import com.example.songssam.R
 import com.example.songssam.adapter.AddSongAdapter
 import com.example.songssam.adapter.AddSongClick
-import com.example.songssam.adapter.SongsAdapter
-import com.example.songssam.adapter.itemAdapter
-import com.example.songssam.data.Songs
+import com.example.songssam.adapter.ItemAdapter
 import com.example.songssam.databinding.FragmentAiBinding
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
 
@@ -56,7 +50,6 @@ class AIFragment : Fragment(), AddSongClick {
     private val mainActivity: MainActivity by lazy {
         context as MainActivity
     }
-    private lateinit var adapter: itemAdapter
     private val REQUEST_CODE_PICK_FILE = 101
 
 
@@ -81,6 +74,49 @@ class AIFragment : Fragment(), AddSongClick {
             binding.afterChooseSong.visibility = VISIBLE
             chartjson()
             initRecyclerView()
+            initSpinner()
+        }
+    }
+
+    private fun initSpinner() {
+        val spinner = binding.spinner
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter.createFromResource(
+            mainActivity,
+            R.array.status,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinner.adapter = adapter
+        }
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    0 -> {
+                        chartjson()
+                        initRecyclerView()
+                    }
+                    1 -> {
+                        getUploadedList()
+                        initRecyclerView()
+                    }
+                    2 -> {
+                        getCompletedList()
+                        initRecyclerView()
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                getUploadedList()
+                initRecyclerView()
+            }
         }
     }
 
@@ -101,7 +137,6 @@ class AIFragment : Fragment(), AddSongClick {
         binding.rv.adapter = songadApter
     }
 
-
     private fun chartjson() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://songssam.site:8443")
@@ -118,6 +153,114 @@ class AIFragment : Fragment(), AddSongClick {
             .build()
         val apiService = retrofit.create(songssamAPI::class.java)
         val call = apiService.chartJson()
+        call.enqueue(object : Callback<List<chartjsonItems>> {
+            override fun onResponse(
+                call: Call<List<chartjsonItems>>,
+                response: Response<List<chartjsonItems>>
+            ) {
+                if (response.isSuccessful.not()) {
+                    Toast.makeText(
+                        mainActivity,
+                        "서버가 닫혀있습니다!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    Log.d("ai", "연결 실패")
+                    return
+                }
+                Log.d("ai", "로그인 연결 성공")
+                try {
+                    itemList = response.body()?.toMutableList() ?: mutableListOf()
+                    Thread(Runnable {
+                        mainActivity.runOnUiThread {
+                            initRecyclerView()
+                        }
+                    }).start()
+                } catch (e: Exception) {
+                }
+            }
+
+            override fun onFailure(call: Call<List<chartjsonItems>>, t: Throwable) {
+                Log.d("ai", t.stackTraceToString())
+                Toast.makeText(
+                    mainActivity,
+                    "네트워크 오류와 같은 이유로 오류 발생!",
+                    Toast.LENGTH_LONG
+                ).show()
+                // 네트워크 오류 등 호출 실패 시 처리
+            }
+        })
+    }
+
+    private fun getUploadedList() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://songssam.site:8443")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(
+                        30,
+                        TimeUnit.SECONDS
+                    ) // Adjust the timeout as needed
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            )
+            .build()
+        val apiService = retrofit.create(songssamAPI::class.java)
+        val call = apiService.getUploadedList()
+        call.enqueue(object : Callback<List<chartjsonItems>> {
+            override fun onResponse(
+                call: Call<List<chartjsonItems>>,
+                response: Response<List<chartjsonItems>>
+            ) {
+                if (response.isSuccessful.not()) {
+                    Toast.makeText(
+                        mainActivity,
+                        "서버가 닫혀있습니다!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    Log.d("ai", "연결 실패")
+                    return
+                }
+                Log.d("ai", "로그인 연결 성공")
+                try {
+                    itemList = response.body()?.toMutableList() ?: mutableListOf()
+                    Thread(Runnable {
+                        mainActivity.runOnUiThread {
+                            initRecyclerView()
+                        }
+                    }).start()
+                } catch (e: Exception) {
+                }
+            }
+
+            override fun onFailure(call: Call<List<chartjsonItems>>, t: Throwable) {
+                Log.d("ai", t.stackTraceToString())
+                Toast.makeText(
+                    mainActivity,
+                    "네트워크 오류와 같은 이유로 오류 발생!",
+                    Toast.LENGTH_LONG
+                ).show()
+                // 네트워크 오류 등 호출 실패 시 처리
+            }
+        })
+    }
+
+    private fun getCompletedList() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://songssam.site:8443")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(
+                        30,
+                        TimeUnit.SECONDS
+                    ) // Adjust the timeout as needed
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            )
+            .build()
+        val apiService = retrofit.create(songssamAPI::class.java)
+        val call = apiService.getCompletedList()
         call.enqueue(object : Callback<List<chartjsonItems>> {
             override fun onResponse(
                 call: Call<List<chartjsonItems>>,
@@ -228,66 +371,85 @@ class AIFragment : Fragment(), AddSongClick {
     }
 
     override fun isNull(songId: Long) {
-        var chooseFile = Intent(Intent.ACTION_GET_CONTENT)
-        chooseFile.type = "audio/mpeg"
-        chooseFile = Intent.createChooser(chooseFile, "녹음하고 싶은 노래의 가수의 목소리와 전주가 담긴 파일을 선택해주세요")
-        chooseFile.putExtra("songId", songId)
-        startActivityForResult(chooseFile, REQUEST_CODE_PICK_FILE)
+        selectMp3(songId)
     }
 
     override fun isUpLoaded() {
-        TODO("Not yet implemented")
     }
 
     override fun isCompleted() {
         startActivity(Intent(mainActivity, RecordingActivity::class.java))
     }
 
+    private fun selectMp3(songId: Long) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "audio/mpeg"
+        }.putExtra("songId", songId)
+        if (intent.resolveActivity(mainActivity.packageManager) != null) {
+            startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == REQUEST_CODE_PICK_FILE && resultCode == Activity.RESULT_OK) {
-            val selectedFile = data?.data!!.toFile()
-            val songId = data.getLongExtra("songId", 0)
-
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://songssam.site:8443")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(
-                    OkHttpClient.Builder()
-                        .readTimeout(
-                            30,
-                            TimeUnit.SECONDS
-                        ) // Adjust the timeout as needed
-                        .connectTimeout(30, TimeUnit.SECONDS)
-                        .build()
-                )
-                .build()
-            val apiService = retrofit.create(songssamAPI::class.java)
-            val call = apiService.uploadSongToRecord(songId, selectedFile)
-            call.enqueue(object :
-                Callback<Void> { // Use Callback<Void> as the callback type
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Toast.makeText(
-                        mainActivity,
-                        "네트워크 오류와 같은 이유로 오류 발생!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        itemList.filter { it.songID == songId }.first().status = "UPLOADED"
-                    } else {
-                        Toast.makeText(
-                            mainActivity,
-                            "서버가 닫혀있습니다!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        Log.d("updateFavoriteSong", "연결 실패")
+            val uri = data?.data
+            if (uri != null) {
+                val contentResolver = mainActivity.applicationContext.contentResolver
+                val selectedFile = createTempFile("temp", null)
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    selectedFile.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
                     }
                 }
-            })
+
+                val songId = data.getLongExtra("songId", 0)
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://songssam.site:8443")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(
+                        OkHttpClient.Builder()
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .build()
+                    )
+                    .build()
+                val apiService = retrofit.create(songssamAPI::class.java)
+                if (selectedFile.exists()) {
+                    val requestFile =
+                        selectedFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                    val filePart =
+                        MultipartBody.Part.createFormData("file", selectedFile.name, requestFile)
+                    val songIdRequestBody =
+                        songId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+
+                    val call = apiService.uploadSongToRecord(songIdRequestBody, filePart)
+                    call.enqueue(object : Callback<Void> {
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Toast.makeText(
+                                mainActivity,
+                                "네트워크 오류와 같은 이유로 오류 발생!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            if (response.isSuccessful) {
+                                itemList.find { it.songID == songId }?.status = "UPLOADED"
+                                initRecyclerView()
+                            } else {
+                                Toast.makeText(
+                                    mainActivity,
+                                    "서버가 닫혀있습니다!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                Log.d("updateFavoriteSong", "연결 실패")
+                            }
+                        }
+                    })
+                }
+            }
         }
+
     }
 }

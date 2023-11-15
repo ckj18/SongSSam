@@ -117,7 +117,15 @@
                                 app:queryHint="녹음가능한 곡 검색" />
                         </LinearLayout>
                     </soup.neumorphism.NeumorphCardView>
-
+                    <Spinner
+                        app:layout_constraintTop_toBottomOf="@id/pressed_card"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/rv"
+                        android:id="@+id/spinner"
+                        android:layout_margin="10dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"/>
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv"
                         android:layout_width="match_parent"
@@ -127,7 +135,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/pressed_card"
+                        app:layout_constraintTop_toBottomOf="@+id/spinner"
                         app:layout_constraintVertical_bias="0.0" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

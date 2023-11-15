@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
@@ -18,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.songssam.API.SongSSamAPI.items
 import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.R
-import com.example.songssam.adapter.itemAdapter
+import com.example.songssam.adapter.ItemAdapter
 import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -30,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 
-class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListener {
+class ChooseSongActivity : AppCompatActivity(), ItemAdapter.SelectionChangeListener {
 
 
     private val btn: AppCompatButton by lazy {
@@ -41,7 +40,7 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
     private val recyclerView: RecyclerView by lazy {
         findViewById(R.id.rv)
     }
-    private lateinit var adapter: itemAdapter
+    private lateinit var adapter: ItemAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,7 +117,7 @@ class ChooseSongActivity : AppCompatActivity(), itemAdapter.SelectionChangeListe
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         // recyclerview adapter 초기화
-        adapter = itemAdapter(itemList, this) // Register the activity as the listener
+        adapter = ItemAdapter(itemList, this) // Register the activity as the listener
         recyclerView.adapter = adapter
     }
 

@@ -89,7 +89,7 @@ class SplashActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<user>, t: Throwable) {
-                    Log.d("retrofit", "첫 사용자이거나 token 유효성 만료")
+                    Log.d("check", "첫 사용자이거나 token 유효성 만료")
                     // 네트워크 오류 등 호출 실패 시 처리
                     Handler().postDelayed({
                         // This method will be executed once the timer is over
@@ -100,6 +100,9 @@ class SplashActivity : AppCompatActivity() {
                     }, splashTime)
                 }
             })
+        }else{
+            startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
+            finish()
         }
     }
 
