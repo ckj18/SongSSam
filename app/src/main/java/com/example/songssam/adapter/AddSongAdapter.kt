@@ -16,7 +16,7 @@ import com.example.songssam.R
 import com.example.songssam.data.SelectedItem
 
 interface AddSongClick{
-    fun isUpLoaded()
+    fun isUpLoaded(songId:Long)
     fun isCompleted()
     fun isNull(songId:Long)
 }
@@ -52,7 +52,7 @@ class AddSongAdapter(private var itemlist: MutableList<chartjsonItems>, private 
         holder.touch.setOnClickListener {
             when(item.status){
                 "UPLOADED"-> {
-                    addSongClick.isUpLoaded()
+                    addSongClick.isUpLoaded(item.songID)
                 }
                 "COMPLETE"-> {
                     addSongClick.isCompleted()

@@ -25,7 +25,6 @@ import com.example.songssam.Activitys.RecordingActivity
 import com.example.songssam.R
 import com.example.songssam.adapter.AddSongAdapter
 import com.example.songssam.adapter.AddSongClick
-import com.example.songssam.adapter.ItemAdapter
 import com.example.songssam.databinding.FragmentAiBinding
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -103,16 +102,19 @@ class AIFragment : Fragment(), AddSongClick {
                         chartjson()
                         initRecyclerView()
                     }
+
                     1 -> {
                         getUploadedList()
                         initRecyclerView()
                     }
+
                     2 -> {
                         getCompletedList()
                         initRecyclerView()
                     }
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 getUploadedList()
                 initRecyclerView()
@@ -374,7 +376,57 @@ class AIFragment : Fragment(), AddSongClick {
         selectMp3(songId)
     }
 
-    override fun isUpLoaded() {
+    override fun isUpLoaded(songId: Long) {
+        processingSong(songId)
+    }
+
+    private fun processingSong(songId: Long) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://songssam.site:8443")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(
+                        30,
+                        TimeUnit.SECONDS
+                    ) // Adjust the timeout as needed
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            )
+            .build()
+        val apiService = retrofit.create(songssamAPI::class.java)
+        val call = apiService.processingSong(songId)
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(
+                call: Call<Void>,
+                response: Response<Void>
+            ) {
+                if (response.isSuccessful.not()) {
+                    Toast.makeText(
+                        mainActivity,
+                        "서버가 닫혀있습니다!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    Log.d("ai", "연결 실패")
+                    return
+                }
+                Log.d("ai", "로그인 연결 성공")
+                Toast.makeText(
+                    mainActivity,
+                    "전처리 요청 성공!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("ai", t.stackTraceToString())
+                Toast.makeText(
+                    mainActivity,
+                    "전처리 요청 실패!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
     }
 
     override fun isCompleted() {
@@ -428,15 +480,19 @@ class AIFragment : Fragment(), AddSongClick {
                         override fun onFailure(call: Call<Void>, t: Throwable) {
                             Toast.makeText(
                                 mainActivity,
-                                "네트워크 오류와 같은 이유로 오류 발생!",
+                                "업로드 실패!",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
 
                         override fun onResponse(call: Call<Void>, response: Response<Void>) {
                             if (response.isSuccessful) {
-                                itemList.find { it.songID == songId }?.status = "UPLOADED"
-                                initRecyclerView()
+                                Toast.makeText(
+                                    mainActivity,
+                                    "업로드 성공!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                Log.d("updateFavoriteSong", "연결 실패")
                             } else {
                                 Toast.makeText(
                                     mainActivity,
