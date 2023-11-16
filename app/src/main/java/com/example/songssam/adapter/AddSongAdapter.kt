@@ -19,6 +19,7 @@ interface AddSongClick{
     fun isUpLoaded(songId:Long)
     fun isCompleted()
     fun isNull(songId:Long)
+    fun isProcessing()
 }
 
 class AddSongAdapter(private var itemlist: MutableList<chartjsonItems>, private val addSongClick: AddSongClick) :
@@ -48,6 +49,9 @@ class AddSongAdapter(private var itemlist: MutableList<chartjsonItems>, private 
             "NONE"->{
                 holder.touchImage.setImageResource(R.drawable.note_add)
             }
+            "PROCESS"->{
+                holder.touchImage.setImageResource(R.drawable.loading)
+            }
         }
         holder.touch.setOnClickListener {
             when(item.status){
@@ -59,6 +63,9 @@ class AddSongAdapter(private var itemlist: MutableList<chartjsonItems>, private 
                 }
                 "NONE"-> {
                     addSongClick.isNull(item.songID)
+                }
+                "PROCESS"->{
+                    addSongClick.isProcessing()
                 }
             }
         }

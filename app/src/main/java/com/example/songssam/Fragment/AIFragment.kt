@@ -378,6 +378,10 @@ class AIFragment : Fragment(), AddSongClick {
         selectMp3(songId)
     }
 
+    override fun isProcessing() {
+        Toast.makeText(mainActivity,"현재 전처리 중에 있습니다!\n (평균 소요 시간: 3분)",Toast.LENGTH_SHORT).show()
+    }
+
     override fun isUpLoaded(songId: Long) {
         processingSong(songId)
     }
