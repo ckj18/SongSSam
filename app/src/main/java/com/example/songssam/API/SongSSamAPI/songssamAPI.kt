@@ -58,7 +58,7 @@ interface songssamAPI {
     @POST("/song/upload")
     fun uploadSongToRecord(
         @Part ("songId") songId: RequestBody,
-        @Part file:MultipartBody.Part
+        @Part file: MultipartBody.Part?
     ):Call<Void>
     @POST("/song/preprocess")
     fun processingSong(

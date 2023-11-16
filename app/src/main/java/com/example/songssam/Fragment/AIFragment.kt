@@ -29,6 +29,7 @@ import com.example.songssam.databinding.FragmentAiBinding
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
@@ -49,6 +50,7 @@ class AIFragment : Fragment(), AddSongClick {
     private val mainActivity: MainActivity by lazy {
         context as MainActivity
     }
+    private var uploadSongId: Long = 0
     private val REQUEST_CODE_PICK_FILE = 101
 
 
@@ -407,8 +409,7 @@ class AIFragment : Fragment(), AddSongClick {
                         "서버가 닫혀있습니다!",
                         Toast.LENGTH_LONG
                     ).show()
-                    Log.d("ai", "연결 실패")
-                    return
+                    Log.e("ai", "연결 실패 - Response code: ${response.code()}")
                 }
                 Log.d("ai", "로그인 연결 성공")
                 Toast.makeText(
@@ -419,7 +420,7 @@ class AIFragment : Fragment(), AddSongClick {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.d("ai", t.stackTraceToString())
+                Log.e("ai", "Call failed: ${t.message}")
                 Toast.makeText(
                     mainActivity,
                     "전처리 요청 실패!",
@@ -434,9 +435,10 @@ class AIFragment : Fragment(), AddSongClick {
     }
 
     private fun selectMp3(songId: Long) {
+        uploadSongId = songId
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "audio/mpeg"
-        }.putExtra("songId", songId)
+        }
         if (intent.resolveActivity(mainActivity.packageManager) != null) {
             startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
         }
@@ -446,16 +448,17 @@ class AIFragment : Fragment(), AddSongClick {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_PICK_FILE && resultCode == Activity.RESULT_OK) {
             val uri = data?.data
+            Log.d("mp3", uri.toString())
             if (uri != null) {
                 val contentResolver = mainActivity.applicationContext.contentResolver
-                val selectedFile = createTempFile("temp", null)
-                contentResolver.openInputStream(uri)?.use { inputStream ->
-                    selectedFile.outputStream().use { outputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
+                val inputStream = contentResolver.openInputStream(uri)
+                val songIdRequestBody =
+                    RequestBody.create("text/plain".toMediaTypeOrNull(), uploadSongId.toString()) // Convert songId to RequestBody
+                val fileRequestBody = inputStream?.readBytes()?.toRequestBody("audio/mpeg".toMediaTypeOrNull())
+                val filePart = fileRequestBody?.let {
+                    MultipartBody.Part.createFormData("file", "$uploadSongId.mp3", it)
                 }
 
-                val songId = data.getLongExtra("songId", 0)
                 val retrofit = Retrofit.Builder()
                     .baseUrl("https://songssam.site:8443")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -467,45 +470,44 @@ class AIFragment : Fragment(), AddSongClick {
                     )
                     .build()
                 val apiService = retrofit.create(songssamAPI::class.java)
-                if (selectedFile.exists()) {
-                    val requestFile =
-                        selectedFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-                    val filePart =
-                        MultipartBody.Part.createFormData("file", selectedFile.name, requestFile)
-                    val songIdRequestBody =
-                        songId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                Log.e("mp3", "songId = $uploadSongId")
+                val call = apiService.uploadSongToRecord(songIdRequestBody, filePart)
+                call.enqueue(object : Callback<Void> {
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Log.e("mp3", "Call failed: ${t.message}")
+                        Toast.makeText(
+                            mainActivity,
+                            "업로드 실패!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
-                    val call = apiService.uploadSongToRecord(songIdRequestBody, filePart)
-                    call.enqueue(object : Callback<Void> {
-                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        if (response.isSuccessful) {
                             Toast.makeText(
                                 mainActivity,
-                                "업로드 실패!",
+                                "업로드 성공!",
                                 Toast.LENGTH_LONG
                             ).show()
+                            Log.d("mp3", "연결 성공")
+                        } else {
+                            Toast.makeText(
+                                mainActivity,
+                                "서버가 닫혀있습니다!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            Log.e("mp3", "연결 실패 - Response code: ${response.code()}")
                         }
-
-                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                            if (response.isSuccessful) {
-                                Toast.makeText(
-                                    mainActivity,
-                                    "업로드 성공!",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                Log.d("updateFavoriteSong", "연결 실패")
-                            } else {
-                                Toast.makeText(
-                                    mainActivity,
-                                    "서버가 닫혀있습니다!",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                Log.d("updateFavoriteSong", "연결 실패")
-                            }
-                        }
-                    })
-                }
+                    }
+                })
             }
+        } else {
+            Log.d(
+                "mp3",
+                "if (requestCode == REQUEST_CODE_PICK_FILE && resultCode == Activity.RESULT_OK) 실패"
+            )
         }
-
     }
+
+
 }
