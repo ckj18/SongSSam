@@ -129,7 +129,7 @@ class AIFragment : Fragment(), AddSongClick {
         binding.beforeChooseSong.visibility = VISIBLE
         binding.afterChooseSong.visibility = GONE
         binding.btnChooseSong.setOnClickListener {
-            val intent = Intent(getActivity(), ChooseSongActivity::class.java)
+            val intent = Intent(activity, ChooseSongActivity::class.java)
             startActivity(intent)
         }
     }
@@ -435,7 +435,8 @@ class AIFragment : Fragment(), AddSongClick {
     }
 
     override fun isCompleted() {
-        startActivity(Intent(mainActivity, RecordingActivity::class.java))
+        val intent = Intent(activity, RecordingActivity::class.java)
+        startActivity(intent)
     }
 
     private fun selectMp3(songId: Long) {

@@ -2,6 +2,7 @@ package com.example.songssam.API.SongSSamAPI
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 import java.io.File
@@ -64,4 +65,9 @@ interface songssamAPI {
     fun processingSong(
         @Query("songId") songId: Long
     ):Call<Void>
+
+    @GET("/song/download")
+    fun playOriginSong(
+        @Query("url") originUrl: String,
+    ):Call<ResponseBody>
 }
