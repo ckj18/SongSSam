@@ -65,9 +65,4 @@ interface songssamAPI {
     fun processingSong(
         @Query("songId") songId: Long
     ):Call<Void>
-
-    @GET("/song/download")
-    fun playOriginSong(
-        @Query("url") originUrl: String,
-    ):Call<ResponseBody>
 }

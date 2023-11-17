@@ -36,8 +36,7 @@
         <activity
             android:name=".Activitys.RecordingActivity"
             android:configChanges="screenSize|orientation"
-            android:exported="false"
-            android:label="Recording" />
+            android:exported="false" />
         <activity
             android:name=".Activitys.ChooseSongActivity"
             android:configChanges="screenSize|orientation"

@@ -7,8 +7,9 @@ data class chartjsonItems(
     @SerializedName("imgUrl")val coverImage : String,
     @SerializedName("title")val title : String,
     @SerializedName("artist")val artist : String,
-    @SerializedName("status")var status : String?,
-    @SerializedName("originUrl")val originUrl : String
+    @SerializedName("status")var status : String,
+    @SerializedName("originUrl")val originUrl : String?,
+    @SerializedName("instUrl")val instUrl : String?
 )
 data class items(
     @SerializedName("id")val songID : Long,

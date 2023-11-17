@@ -31,80 +31,83 @@
         <FrameLayout
             android:id="@+id/perfect_score"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="200dp"
             android:layout_marginTop="20dp"
             android:background="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <View
+                android:id="@+id/background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#99000000"
-                />
+                android:background="#99000000" />
+
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:background="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_gravity="center"
-                />
-            <TextView
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
                 android:id="@+id/pitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="pitch"
-                android:textSize="20dp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="20dp" />
 
         </FrameLayout>
 
-        <TextView
-            android:layout_marginTop="20dp"
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="노래 제목"
-            android:textSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/perfect_score" />
-
-        <TextView
-            android:id="@+id/lyric"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="가사 첫번째 줄"
-            android:textSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
-
-        <TextView
-            android:id="@+id/lyric2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="가사 두번째 줄"
-            android:textSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lyric" />
-
-        <TextView
-            android:id="@+id/lyric3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="가사 세번째 줄"
-            android:textSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lyric2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/cover"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="13dp"
+        android:src="@drawable/music_note"
+        app:civ_border_color="@color/white"
+        app:civ_border_width="2dp"
+        app:layout_constraintTop_toBottomOf="@id/record_container"
+        app:layout_constraintStart_toStartOf="@id/progressBar" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="start"
+        android:maxLines="2"
+        android:text="제목"
+        android:textColor="@color/black"
+        android:textSize="17dp"
+        android:textStyle="bold"
+
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toEndOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover" />
+    <TextView
+        android:id="@+id/artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="3dp"
+        android:singleLine="true"
+        android:text="가수 이름"
+        android:textColor="@color/black"
+        android:textSize="13dp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title"/>
 
     <TextView
         android:id="@+id/tv_playtime"
@@ -141,13 +144,13 @@
 
 
         <soup.neumorphism.NeumorphFloatingActionButton
-            android:id="@+id/reset_btn"
+            android:id="@+id/hear_btn"
             style="@style/Widget.Neumorph.FloatingActionButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center_horizontal"
             android:scaleType="centerInside"
-            android:src="@drawable/restart" />
+            android:src="@drawable/hear" />
 
 
     </LinearLayout>
@@ -172,6 +175,6 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/record_container" />
+        app:layout_constraintTop_toBottomOf="@+id/cover" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

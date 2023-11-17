@@ -11,21 +11,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/artist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="3dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="3dp"
-        android:singleLine="true"
-        android:text="가수 이름"
-        android:textColor="@color/black"
-        android:textSize="13dp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="@id/title"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+    />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/cover"
@@ -54,7 +40,21 @@
         app:layout_constraintHorizontal_bias="0.3"
         app:layout_constraintStart_toEndOf="@id/cover"
         app:layout_constraintTop_toTopOf="@id/cover" />
-
+    <TextView
+        android:id="@+id/artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="3dp"
+        android:singleLine="true"
+        android:text="가수 이름"
+        android:textColor="@color/black"
+        android:textSize="13dp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title"/>
     <ImageView
         android:id="@+id/add_button"
         android:layout_width="40dp"

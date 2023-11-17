@@ -434,8 +434,13 @@ class AIFragment : Fragment(), AddSongClick {
         })
     }
 
-    override fun isCompleted() {
+    override fun isCompleted(title: String, artist: String,cover:String, songId: Long, instUrl: String) {
         val intent = Intent(activity, RecordingActivity::class.java)
+        intent.putExtra("title",title)
+        intent.putExtra("artist",artist)
+        intent.putExtra("cover",cover)
+        intent.putExtra("songId",songId)
+        intent.putExtra("instUrl",instUrl)
         startActivity(intent)
     }
 
