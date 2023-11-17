@@ -88,6 +88,12 @@ class AddSongAdapter(private var itemlist: MutableList<chartjsonItems>, private 
             }
             true
         }
+        holder.touch.setOnTouchListener { view, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_UP && mediaPlayer?.isPlaying == true) {
+                stopMediaPlayer()
+            }
+            false
+        }
     }
 
     private fun playOriginUrl(originUrl: String) {
