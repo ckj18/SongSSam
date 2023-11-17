@@ -33,7 +33,11 @@ import be.tarsos.dsp.writer.WriterProcessor
 import com.bumptech.glide.Glide
 import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.R
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -91,6 +95,9 @@ class RecordingActivity : AppCompatActivity() {
     private val container: FrameLayout by lazy {
         findViewById(R.id.perfect_score)
     }
+    private val sendBTN: soup.neumorphism.NeumorphButton by lazy{
+        findViewById(R.id.send_btn)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,6 +126,13 @@ class RecordingActivity : AppCompatActivity() {
         )
         initRecordingBTN()
         initHearBTN()
+        initSendBTN()
+    }
+
+    private fun initSendBTN() {
+        sendBTN.setOnClickListener {
+            getOutputMediaFile()
+        }
     }
 
     private fun initHearBTN() {
@@ -286,8 +300,7 @@ class RecordingActivity : AppCompatActivity() {
         if (!mediaDir.exists()) {
             mediaDir.mkdirs()
         }
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val mediaFile = File(mediaDir, "REC_$timeStamp.mp4")
+        val mediaFile = File(mediaDir, "${filename}.mp3")
         Log.d("record", "녹음 저장")
         val retrofit = Retrofit.Builder()
             .baseUrl("https://songssam.site:8443")
@@ -305,7 +318,16 @@ class RecordingActivity : AppCompatActivity() {
 
         val apiService = retrofit.create(songssamAPI::class.java)
         val accessToken = "Bearer " + GlobalApplication.prefs.getString("accessToken", "")
-        val call = apiService.uploadSong(accessToken, mediaFile, songId = 36518341)
+        val songId = intent.getLongExtra("songId",0)
+
+        val songIdRequestBody =
+            RequestBody.create("text/plain".toMediaTypeOrNull(), songId.toString()) // Convert songId to RequestBody
+        val fileRequestBody = RequestBody.create("audio/mpeg".toMediaTypeOrNull(), file)
+        val filePart = fileRequestBody?.let {
+            MultipartBody.Part.createFormData("file", "$filename.mp3", it)
+        }
+
+        val call = apiService.uploadSong(accessToken, filePart, songIdRequestBody)
         call.enqueue(object : Callback<Void> { // Use Callback<Void> as the callback type
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 // Handle failure here
@@ -319,9 +341,8 @@ class RecordingActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    val intent = Intent(this@RecordingActivity, MainActivity::class.java)
-                    GlobalApplication.prefs.setString("chooseSong", "done")
-                    startActivity(intent)
+                    Toast.makeText(this@RecordingActivity, "전송에 성공했습니다!", Toast.LENGTH_LONG)
+                        .show()
                 } else {
                     // Handle non-successful response here
                     Toast.makeText(this@RecordingActivity, "서버가 닫혀있습니다!", Toast.LENGTH_LONG)

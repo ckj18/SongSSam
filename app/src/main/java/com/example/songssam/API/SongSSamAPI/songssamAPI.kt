@@ -33,11 +33,12 @@ interface songssamAPI {
         @Query("target") target: String,
         @Query("mode") mode: Int
     ):Call<List<items>>
+    @Multipart
     @POST("/member/upload")
     fun uploadSong(
         @Header("Authorization") Authorization: String,
-        @Body favoriteSongs: File,
-        @Query("songId") songId: Int
+        @Part file: MultipartBody.Part?,
+        @Part("songId") songId: RequestBody
     ):Call<Void>
     @GET("/song/chartjson")
     fun chartJson(

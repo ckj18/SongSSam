@@ -491,7 +491,6 @@ class AIFragment : Fragment(), AddSongClick {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
                             Toast.makeText(
