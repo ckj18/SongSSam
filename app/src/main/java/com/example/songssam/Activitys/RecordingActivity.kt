@@ -98,7 +98,7 @@ class RecordingActivity : AppCompatActivity() {
     private val sendBTN: soup.neumorphism.NeumorphButton by lazy{
         findViewById(R.id.send_btn)
     }
-
+    private var isHearing = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recording)
@@ -137,35 +137,42 @@ class RecordingActivity : AppCompatActivity() {
 
     private fun initHearBTN() {
         hearBTN.setOnClickListener {
-            try {
+            if(!isHearing){
+                hearBTN.setImageResource(R.drawable.hearoff)
+                try {
+                    releaseDispatcher()
+                    val fileInputStream = FileInputStream(file)
+                    dispatcher = AudioDispatcher(
+                        UniversalAudioInputStream(
+                            fileInputStream,
+                            tarsosDSPAudioFormat
+                        ), 1024, 0
+                    )
+                    val playerProcessor: AudioProcessor =
+                        AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0)
+                    dispatcher!!.addAudioProcessor(playerProcessor)
+                    val pitchDetectionHandler =
+                        PitchDetectionHandler { res, e ->
+                            val pitchInHz = res.pitch
+                            runOnUiThread { pitch.setText(pitchInHz.toString() + "") }
+                        }
+                    val pitchProcessor: AudioProcessor = PitchProcessor(
+                        PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
+                        22050f,
+                        1024,
+                        pitchDetectionHandler
+                    )
+                    dispatcher!!.addAudioProcessor(pitchProcessor)
+                    val audioThread = Thread(dispatcher, "Audio Thread")
+                    audioThread.start()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }else{
+                hearBTN.setImageResource(R.drawable.hear)
                 releaseDispatcher()
-                val fileInputStream = FileInputStream(file)
-                dispatcher = AudioDispatcher(
-                    UniversalAudioInputStream(
-                        fileInputStream,
-                        tarsosDSPAudioFormat
-                    ), 1024, 0
-                )
-                val playerProcessor: AudioProcessor =
-                    AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0)
-                dispatcher!!.addAudioProcessor(playerProcessor)
-                val pitchDetectionHandler =
-                    PitchDetectionHandler { res, e ->
-                        val pitchInHz = res.pitch
-                        runOnUiThread { pitch.setText(pitchInHz.toString() + "") }
-                    }
-                val pitchProcessor: AudioProcessor = PitchProcessor(
-                    PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
-                    22050f,
-                    1024,
-                    pitchDetectionHandler
-                )
-                dispatcher!!.addAudioProcessor(pitchProcessor)
-                val audioThread = Thread(dispatcher, "Audio Thread")
-                audioThread.start()
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
             }
+            isHearing = !isHearing
         }
     }
 
