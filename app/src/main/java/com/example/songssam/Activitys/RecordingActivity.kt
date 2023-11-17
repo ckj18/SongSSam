@@ -41,6 +41,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.ByteOrder
@@ -52,10 +53,9 @@ import java.util.concurrent.TimeUnit
 class RecordingActivity : AppCompatActivity() {
     //필요한 권한 선언
     private val requiredPermissions = arrayOf(
-        RECORD_AUDIO, WRITE_EXTERNAL_STORAGE,
-        READ_EXTERNAL_STORAGE
+        RECORD_AUDIO, WRITE_EXTERNAL_STORAGE
     )
-    private val filename = intent.getStringExtra("songId") + ".wav"
+    private lateinit var filename: String
     var dispatcher: AudioDispatcher? = null
     lateinit var tarsosDSPAudioFormat: TarsosDSPAudioFormat
     private var mediaPlayer: MediaPlayer? = null
@@ -68,14 +68,13 @@ class RecordingActivity : AppCompatActivity() {
     private val tv_playtime: TextView by lazy {
         findViewById(R.id.tv_playtime)
     }
+    var dictionary = HashMap<Double, String>()
+
     private val hearBTN: soup.neumorphism.NeumorphFloatingActionButton by lazy {
         findViewById(R.id.hear_btn)
     }
     private val play_btn: soup.neumorphism.NeumorphFloatingActionButton by lazy {
         findViewById(R.id.play_btn)
-    }
-    private val success_btn: soup.neumorphism.NeumorphButton by lazy {
-        findViewById(R.id.success_btn)
     }
     private val cover: de.hdodenhof.circleimageview.CircleImageView by lazy {
         findViewById(R.id.cover)
@@ -96,6 +95,10 @@ class RecordingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recording)
+        requestPermissions(this, requiredPermissions, REQUEST_RECORD_AUDIO_PERMISSION)
+        val title = intent.getStringExtra("title")
+        val artist = intent.getStringExtra("artist")
+        filename =  "${title}_${artist}.wav"
         showData()
 
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
@@ -104,9 +107,6 @@ class RecordingActivity : AppCompatActivity() {
         val actionBar: ActionBar? = supportActionBar //앱바 제어를 위해 툴바 액세스
         actionBar!!.setDisplayHomeAsUpEnabled(true) // 앱바에 뒤로가기 버튼 만들기
         actionBar?.setHomeAsUpIndicator(R.drawable.arrow_back) // 뒤로가기 버튼 색상 설정
-
-        val sdCard = Environment.getExternalStorageDirectory()
-        file = File(sdCard, filename)
 
         tarsosDSPAudioFormat = TarsosDSPAudioFormat(
             TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
@@ -117,10 +117,8 @@ class RecordingActivity : AppCompatActivity() {
             22050F,
             ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder())
         )
-
         initRecordingBTN()
         initHearBTN()
-        initSuccessBTN()
     }
 
     private fun initHearBTN() {
@@ -158,9 +156,10 @@ class RecordingActivity : AppCompatActivity() {
     }
 
     fun releaseDispatcher() {
-        if (dispatcher != null) {
-            if (!dispatcher!!.isStopped)
-                dispatcher!!.stop()
+        dispatcher?.let {
+            if (!it.isStopped) {
+                it.stop()
+            }
             dispatcher = null
         }
     }
@@ -175,17 +174,17 @@ class RecordingActivity : AppCompatActivity() {
         play_btn.setOnClickListener {
             if (isRecording) {
                 //녹음되고 있을 떄
-                play_btn.setImageResource(R.drawable.record_round)
                 stopAudio()
                 stopRecording()
                 isRecording = false
+                play_btn.setImageResource(R.drawable.record_round)
             } else {
                 //녹음하려할 떄
                 getRecordingAuth()
-                play_btn.setImageResource(R.drawable.stop)
-                playAudio()
                 recordAudio()
+                playAudio()
                 isRecording = true
+                play_btn.setImageResource(R.drawable.stop)
             }
         }
     }
@@ -196,30 +195,38 @@ class RecordingActivity : AppCompatActivity() {
 
     private fun recordAudio() {
         releaseDispatcher()
-        val dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
+        val start = System.currentTimeMillis()
 
-        try {
-            val randomAccessFile = RandomAccessFile(file, "rw")
-            val recordProcessor: AudioProcessor =
-                WriterProcessor(tarsosDSPAudioFormat, randomAccessFile)
-            dispatcher.addAudioProcessor(recordProcessor)
-            val pitchDetectionHandler =
-                PitchDetectionHandler { res, e ->
-                    val pitchInHz = res.pitch
-                    runOnUiThread { pitch.setText(pitchInHz.toString() + "") }
-                }
-            val pitchProcessor: AudioProcessor = PitchProcessor(
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+        file = File(storageDir, filename)
+        val file = File(storageDir, filename)
+
+        val randomAccessFile = RandomAccessFile(file, "rw")
+        val recordProcessor = WriterProcessor(tarsosDSPAudioFormat, randomAccessFile)
+        dispatcher!!.addAudioProcessor(recordProcessor)
+        val pitchDetectionHandler = PitchDetectionHandler { res, e ->
+            val pitchInHz = res.pitch
+            Log.d("record", res.pitch.toString())
+            val octav = ProcessPitch(pitchInHz) // pitch -> note
+            Log.d("record", octav)
+            runOnUiThread {
+                pitch.setText(octav)
+                val end = System.currentTimeMillis() // note가 입력된 시간 가져오기(일반시각)
+                val time = (end - start) / 1000.0 // 녹음이 시작된 이후의 시간으로 변경
+                dictionary.put(time, octav) // hashmap에 <time, note> 입력
+            }
+        }
+        val pitchProcessor =
+            PitchProcessor(
                 PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
-                22050f,
+                22050F,
                 1024,
                 pitchDetectionHandler
             )
-            dispatcher.addAudioProcessor(pitchProcessor)
-            val audioThread = Thread(dispatcher, "Audio Thread")
-            audioThread.start()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+        dispatcher!!.addAudioProcessor(pitchProcessor)
+        val audioThread = Thread(dispatcher, "Audio Thread")
+        audioThread.start()
     }
 
     fun playAudio() {
@@ -334,7 +341,6 @@ class RecordingActivity : AppCompatActivity() {
                 finish()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -347,12 +353,6 @@ class RecordingActivity : AppCompatActivity() {
             it.release()
         }
         mediaPlayer = null
-    }
-
-    private fun initSuccessBTN() {
-        success_btn.setOnClickListener {
-            //TODO("녹음 완료 후 클릭 시 다음 엑티비티 전환")
-        }
     }
 
     private fun getRecordingAuth() {
@@ -372,12 +372,6 @@ class RecordingActivity : AppCompatActivity() {
         if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION && audioPermissionGranted) {
             // Both permissions are granted, proceed with recording and file access.
             Log.d("record", "Both permissions granted")
-            val filename = intent.getStringExtra("songId") + ".wav"
-            val sdcard = Environment.getExternalStorageDirectory()
-            file = File(sdcard, filename)
-
-            dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0)
-            isRecording = true
         } else {
             // Permissions not granted, show a permission context popup.
             Log.d("record", "Permission not granted")
