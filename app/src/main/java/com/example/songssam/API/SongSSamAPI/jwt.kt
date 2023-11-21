@@ -11,6 +11,12 @@ data class chartjsonItems(
     @SerializedName("originUrl")val originUrl : String?,
     @SerializedName("instUrl")val instUrl : String?
 )
+
+data class ChartJsonItem(
+    @SerializedName("generatedUrl") val generatedUrl: String,
+    @SerializedName("song") val song: chartjsonItems,
+)
+
 data class items(
     @SerializedName("id")val songID : Long,
     @SerializedName("imgUrl")val coverImage : String,
@@ -38,4 +44,9 @@ data class userInfo(
     @SerializedName("nickname")val nickname : String,
     @SerializedName("profileUrl")val profile : String,
     @SerializedName("role")val role : String
+)
+
+data class Voice(
+    @SerializedName("id")val id : Long,
+    @SerializedName("name")val name : String
 )

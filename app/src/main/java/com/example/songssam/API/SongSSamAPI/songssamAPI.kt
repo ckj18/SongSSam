@@ -66,4 +66,11 @@ interface songssamAPI {
     fun processingSong(
         @Query("songId") songId: Long
     ):Call<Void>
+    @GET("/ddsp/sampleVoiceList")
+    fun getSampleVoiceList(
+    ):Call<List<Voice>>
+    @GET("/ddsp/generatedSongList")
+    fun getGeneratedSongList(
+        @Query("ptrId") target: Long,
+    ):Call<List<ChartJsonItem>>
 }

@@ -31,6 +31,7 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler
 import be.tarsos.dsp.pitch.PitchProcessor
 import be.tarsos.dsp.writer.WriterProcessor
 import com.bumptech.glide.Glide
+import com.example.songssam.API.SongSSamAPI.items
 import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.R
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -38,6 +39,8 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.jsoup.Jsoup
+import org.jsoup.select.Elements
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -95,7 +98,7 @@ class RecordingActivity : AppCompatActivity() {
     private val container: FrameLayout by lazy {
         findViewById(R.id.perfect_score)
     }
-    private val sendBTN: soup.neumorphism.NeumorphButton by lazy{
+    private val sendBTN: soup.neumorphism.NeumorphButton by lazy {
         findViewById(R.id.send_btn)
     }
     private var isHearing = false
@@ -105,7 +108,7 @@ class RecordingActivity : AppCompatActivity() {
         requestPermissions(this, requiredPermissions, REQUEST_RECORD_AUDIO_PERMISSION)
         val title = intent.getStringExtra("title")
         val artist = intent.getStringExtra("artist")
-        filename =  "${title}_${artist}.wav"
+        filename = "${title}_${artist}.wav"
         showData()
 
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
@@ -127,7 +130,24 @@ class RecordingActivity : AppCompatActivity() {
         initRecordingBTN()
         initHearBTN()
         initSendBTN()
+//        initlylics()
     }
+
+//    private fun initlylics() {
+//        Thread(Runnable {
+//            val songId = intent.getLongExtra("songId", 0).toString()
+//            val doc =
+//                Jsoup.connect("https://www.melon.com/chart/index.htm?songId=$songId")
+//                    .userAgent("Chrome").get()
+//
+//            val crawlLyrics = doc.select("#d_video_summary").text()
+//
+//            Log.d("lylics",crawlLyrics)
+//            runOnUiThread {
+//                lylics.text = crawlLyrics
+//            }
+//        }).start()
+//    }
 
     private fun initSendBTN() {
         sendBTN.setOnClickListener {
@@ -137,7 +157,7 @@ class RecordingActivity : AppCompatActivity() {
 
     private fun initHearBTN() {
         hearBTN.setOnClickListener {
-            if(!isHearing){
+            if (!isHearing) {
                 hearBTN.setImageResource(R.drawable.hearoff)
                 try {
                     releaseDispatcher()
@@ -168,7 +188,7 @@ class RecordingActivity : AppCompatActivity() {
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-            }else{
+            } else {
                 hearBTN.setImageResource(R.drawable.hear)
                 releaseDispatcher()
             }
@@ -325,10 +345,13 @@ class RecordingActivity : AppCompatActivity() {
 
         val apiService = retrofit.create(songssamAPI::class.java)
         val accessToken = "Bearer " + GlobalApplication.prefs.getString("accessToken", "")
-        val songId = intent.getLongExtra("songId",0)
+        val songId = intent.getLongExtra("songId", 0)
 
         val songIdRequestBody =
-            RequestBody.create("text/plain".toMediaTypeOrNull(), songId.toString()) // Convert songId to RequestBody
+            RequestBody.create(
+                "text/plain".toMediaTypeOrNull(),
+                songId.toString()
+            ) // Convert songId to RequestBody
         val fileRequestBody = RequestBody.create("audio/mpeg".toMediaTypeOrNull(), file)
         val filePart = fileRequestBody?.let {
             MultipartBody.Part.createFormData("file", "$filename.mp3", it)
@@ -369,6 +392,7 @@ class RecordingActivity : AppCompatActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
