@@ -17,6 +17,7 @@ import com.example.songssam.API.SongSSamAPI.chartjsonItems
 import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.Activitys.MainActivity
 import com.example.songssam.adapter.GenerateAIAdapter
+import com.example.songssam.adapter.generateInterface
 import com.example.songssam.databinding.FragmentHomeBinding
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -33,13 +34,14 @@ import java.util.concurrent.TimeUnit
 /**
  * A simple [Fragment] subclass.
  */
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment() ,generateInterface{
     lateinit var binding: FragmentHomeBinding
     private var itemList = mutableListOf<chartjsonItems>()
     private var generatedItemList = mutableListOf<chartjsonItems>()
     private var generatedItemUrlPair = mutableListOf<Pair<Long, String>>()
-    private var sampleVoiceList = mutableListOf<Voice>(Voice(10, "test"))
+    private var sampleVoiceList = mutableListOf<Voice>()
     private lateinit var songAdapter: GenerateAIAdapter
+    private var voiceId: Long = 1
 
     private val mainActivity: MainActivity by lazy {
         context as MainActivity
@@ -93,6 +95,7 @@ class HomeFragment : Fragment() {
                         generatedItemUrlPair.add(Pair(it.song.songID, it.generatedUrl))
                         true
                     }
+                    Log.d("done","done")
                     Thread(Runnable {
                         mainActivity.runOnUiThread {
                             initRecyclerView()
@@ -230,7 +233,14 @@ class HomeFragment : Fragment() {
 
         binding.rv.layoutManager =
             LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-        songAdapter = GenerateAIAdapter(reorderedItemList, generatedItemList, generatedItemUrlPair)
+
+        songAdapter = GenerateAIAdapter(
+            reorderedItemList,
+            generatedItemList,
+            generatedItemUrlPair,
+            voiceId,
+            this
+        )
         binding.rv.adapter = songAdapter
     }
 
@@ -255,15 +265,36 @@ class HomeFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                getGeneratedSongList(sampleVoiceList.find {
+                val num = sampleVoiceList.find {
                     it.name == dataArray[position]
-                }!!.id)
+                }!!.id
+                getGeneratedSongList(num)
+                voiceId = num
                 adapter.notifyDataSetChanged()
                 initRecyclerView()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
+        }
+    }
+
+    override fun successRequest() {
+        view?.post {
+            Toast.makeText(
+                requireContext(),
+                "AI커버 생성 요청 전송 완료!⭕",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    override fun failRequest(){
+        view?.post {
+            Toast.makeText(
+                requireContext(),
+                "AI커버 생성 요청 전송 실패!❌",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }
