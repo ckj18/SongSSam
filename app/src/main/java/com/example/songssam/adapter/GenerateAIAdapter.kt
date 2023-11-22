@@ -1,6 +1,5 @@
 package com.example.songssam.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,10 +17,8 @@ class GenerateAIAdapter(
 ) :
     RecyclerView.Adapter<GenerateAIAdapter.TaskViewHolder>() {
 
-    // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): TaskViewHolder {
-        // Create a new view, which defines the UI of the list item
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.songs, viewGroup, false)
+        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.generate_cover_item, viewGroup, false)
         return TaskViewHolder(view)
     }
 
@@ -29,7 +26,6 @@ class GenerateAIAdapter(
         return itemlist.size
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val item = itemlist[position]
 
