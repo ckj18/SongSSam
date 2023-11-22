@@ -32,6 +32,7 @@ class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     private var itemList = mutableListOf<chartjsonItems>()
     private var generatedItemList = mutableListOf<chartjsonItems>()
+    private var generatedItemUrlPair = mutableListOf<Pair<Long,String>>()
     private var sampleVoiceList = mutableListOf<Voice>(Voice(10,"test"))
     private lateinit var songAdapter: GenerateAIAdapter
 
@@ -46,9 +47,8 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater)
         getSampleVoice()
-        getCompletedList()
         getGeneratedSongList(sampleVoiceList.first().id)
-        initRecyclerView()
+        getCompletedList()
         return binding.root
     }
 
@@ -86,6 +86,7 @@ class HomeFragment : Fragment() {
                 try {
                     response.body()?.all {
                         generatedItemList.add(it.song)
+                        generatedItemUrlPair.add(Pair(it.song.songID,it.generatedUrl))
                         true
                     }
                     Log.d("generatedItemList", generatedItemList.toString())
@@ -222,7 +223,7 @@ class HomeFragment : Fragment() {
 
         binding.rv.layoutManager =
             LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-        songAdapter = GenerateAIAdapter(reorderedItemList,generatedItemList)
+        songAdapter = GenerateAIAdapter(reorderedItemList,generatedItemList,generatedItemUrlPair)
         binding.rv.adapter = songAdapter
     }
 
