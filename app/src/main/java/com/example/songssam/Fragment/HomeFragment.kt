@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.songssam.API.SongSSamAPI.ChartJsonItem
 import com.example.songssam.API.SongSSamAPI.Voice
@@ -17,6 +18,10 @@ import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.Activitys.MainActivity
 import com.example.songssam.adapter.GenerateAIAdapter
 import com.example.songssam.databinding.FragmentHomeBinding
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,8 +37,8 @@ class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     private var itemList = mutableListOf<chartjsonItems>()
     private var generatedItemList = mutableListOf<chartjsonItems>()
-    private var generatedItemUrlPair = mutableListOf<Pair<Long,String>>()
-    private var sampleVoiceList = mutableListOf<Voice>(Voice(10,"test"))
+    private var generatedItemUrlPair = mutableListOf<Pair<Long, String>>()
+    private var sampleVoiceList = mutableListOf<Voice>(Voice(10, "test"))
     private lateinit var songAdapter: GenerateAIAdapter
 
     private val mainActivity: MainActivity by lazy {
@@ -46,13 +51,12 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater)
-        getSampleVoice()
-        getGeneratedSongList(sampleVoiceList.first().id)
         getCompletedList()
+        getSampleVoice()
         return binding.root
     }
 
-    private fun getGeneratedSongList(ptrId : Long){
+    private fun getGeneratedSongList(ptrId: Long) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://songssam.site:8443")
             .addConverterFactory(GsonConverterFactory.create())
@@ -86,10 +90,14 @@ class HomeFragment : Fragment() {
                 try {
                     response.body()?.all {
                         generatedItemList.add(it.song)
-                        generatedItemUrlPair.add(Pair(it.song.songID,it.generatedUrl))
+                        generatedItemUrlPair.add(Pair(it.song.songID, it.generatedUrl))
                         true
                     }
-                    Log.d("generatedItemList", generatedItemList.toString())
+                    Thread(Runnable {
+                        mainActivity.runOnUiThread {
+                            initRecyclerView()
+                        }
+                    }).start()
                 } catch (e: Exception) {
                 }
             }
@@ -105,6 +113,7 @@ class HomeFragment : Fragment() {
             }
         })
     }
+
     private fun getCompletedList() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://songssam.site:8443")
@@ -139,11 +148,6 @@ class HomeFragment : Fragment() {
                 try {
                     itemList = response.body()?.toMutableList() ?: mutableListOf()
                     Log.d("itemList", itemList.toString())
-                    Thread(Runnable {
-                        mainActivity.runOnUiThread {
-                            initRecyclerView()
-                        }
-                    }).start()
                 } catch (e: Exception) {
                 }
             }
@@ -159,7 +163,8 @@ class HomeFragment : Fragment() {
             }
         })
     }
-    private fun getSampleVoice(){
+
+    private fun getSampleVoice() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://songssam.site:8443")
             .addConverterFactory(GsonConverterFactory.create())
@@ -194,6 +199,7 @@ class HomeFragment : Fragment() {
                     sampleVoiceList = response.body()?.toMutableList() ?: mutableListOf()
                     Log.d("voice", sampleVoiceList.toString())
                     initSpinner()
+                    getGeneratedSongList(sampleVoiceList.first().id)
                 } catch (e: Exception) {
                     Log.d("voice", e.stackTraceToString())
                 }
@@ -210,6 +216,7 @@ class HomeFragment : Fragment() {
             }
         })
     }
+
     private fun initRecyclerView() {
         // generatedItemList에 포함된 아이템을 앞으로 이동시키기
         val itemsInGeneratedList = itemList.filter { it in generatedItemList }
@@ -223,23 +230,25 @@ class HomeFragment : Fragment() {
 
         binding.rv.layoutManager =
             LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-        songAdapter = GenerateAIAdapter(reorderedItemList,generatedItemList,generatedItemUrlPair)
+        songAdapter = GenerateAIAdapter(reorderedItemList, generatedItemList, generatedItemUrlPair)
         binding.rv.adapter = songAdapter
     }
 
     private fun initSpinner() {
         val spinner = binding.voiceSpinner
         val dataArray = mutableListOf<String>()
-        Log.d("spinner",sampleVoiceList.toString())
+        Log.d("spinner", sampleVoiceList.toString())
         sampleVoiceList.all {
             dataArray.add(it.name)
         }
-        Log.d("spinner",dataArray.toString())
-        val adapter :ArrayAdapter<String> = ArrayAdapter(mainActivity,
-            soup.neumorphism.R.layout.support_simple_spinner_dropdown_item,dataArray)
+        Log.d("spinner", dataArray.toString())
+        val adapter: ArrayAdapter<String> = ArrayAdapter(
+            mainActivity,
+            soup.neumorphism.R.layout.support_simple_spinner_dropdown_item, dataArray
+        )
 
-        spinner.adapter  = adapter
-        spinner.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+        spinner.adapter = adapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
