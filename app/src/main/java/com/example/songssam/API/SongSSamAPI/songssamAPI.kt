@@ -73,4 +73,8 @@ interface songssamAPI {
     fun getGeneratedSongList(
         @Query("ptrId") target: Long,
     ):Call<List<ChartJsonItem>>
+    @GET("/member/user_recommand_list")
+    fun getRecommendList(
+        @Header("Authorization") Authorization: String
+    ):Call<List<chartjsonItems>>
 }

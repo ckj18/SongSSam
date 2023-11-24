@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.recyclerview.widget.LinearLayoutManager
 import be.tarsos.dsp.AudioDispatcher
 import be.tarsos.dsp.AudioProcessor
 import be.tarsos.dsp.io.TarsosDSPAudioFormat
@@ -31,16 +32,16 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler
 import be.tarsos.dsp.pitch.PitchProcessor
 import be.tarsos.dsp.writer.WriterProcessor
 import com.bumptech.glide.Glide
-import com.example.songssam.API.SongSSamAPI.items
+import com.example.songssam.API.SongSSamAPI.chartjsonItems
 import com.example.songssam.API.SongSSamAPI.songssamAPI
 import com.example.songssam.R
+import com.example.songssam.adapter.RecommendAdapter
+import com.example.songssam.adapter.RecommendClick
+import com.example.songssam.databinding.ActivityRecordingBinding
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.jsoup.Jsoup
-import org.jsoup.select.Elements
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,16 +49,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.ByteOrder
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
-
-class RecordingActivity : AppCompatActivity() {
+class RecordingActivity : AppCompatActivity(), RecommendClick {
     //필요한 권한 선언
     private val requiredPermissions = arrayOf(
         RECORD_AUDIO, WRITE_EXTERNAL_STORAGE
@@ -68,7 +65,6 @@ class RecordingActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var file: File // Declare the file variable
     private var isRecording = false
-
     private val pitch: TextView by lazy {
         findViewById(R.id.pitch)
     }
@@ -102,10 +98,16 @@ class RecordingActivity : AppCompatActivity() {
         findViewById(R.id.send_btn)
     }
     private var isHearing = false
+    private lateinit var binding: ActivityRecordingBinding
+    private var itemList = mutableListOf<chartjsonItems>()
+    private lateinit var recommendAdapter: RecommendAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recording)
+        binding = ActivityRecordingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         requestPermissions(this, requiredPermissions, REQUEST_RECORD_AUDIO_PERMISSION)
+
         val title = intent.getStringExtra("title")
         val artist = intent.getStringExtra("artist")
         filename = "${title}_${artist}.wav"
@@ -130,7 +132,74 @@ class RecordingActivity : AppCompatActivity() {
         initRecordingBTN()
         initHearBTN()
         initSendBTN()
+        initRecommendRV()
+        getRecommendList()
 //        initlylics()
+    }
+
+    private fun getRecommendList() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://songssam.site:8443")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(
+                        30,
+                        TimeUnit.SECONDS
+                    ) // Adjust the timeout as needed
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .build()
+            )
+            .build()
+        val apiService = retrofit.create(songssamAPI::class.java)
+        val accesstokenInfo = GlobalApplication.prefs.getString("accessToken","")
+        val call = apiService.getRecommendList("Bearer $accesstokenInfo")
+        call.enqueue(object : Callback<List<chartjsonItems>> {
+            override fun onResponse(
+                call: Call<List<chartjsonItems>>,
+                response: Response<List<chartjsonItems>>
+            ) {
+                if (response.isSuccessful.not()) {
+                    Toast.makeText(
+                        this@RecordingActivity,
+                        "서버가 닫혀있습니다!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    Log.d("ai", "연결 실패")
+                    return
+                }
+                Log.d("ai", "로그인 연결 성공")
+                try {
+                    itemList = response.body()?.toMutableList() ?: mutableListOf()
+                    Thread(Runnable {
+                        this@RecordingActivity.runOnUiThread {
+                            initRecommendRV()
+                        }
+                    }).start()
+                } catch (e: Exception) {
+                }
+            }
+
+            override fun onFailure(call: Call<List<chartjsonItems>>, t: Throwable) {
+                Log.d("ai", t.stackTraceToString())
+                Toast.makeText(
+                    this@RecordingActivity,
+                    "네트워크 오류와 같은 이유로 오류 발생!",
+                    Toast.LENGTH_LONG
+                ).show()
+                // 네트워크 오류 등 호출 실패 시 처리
+            }
+        })
+    }
+
+    private fun initRecommendRV() {
+        binding.rv.layoutManager =
+            LinearLayoutManager(binding.root.context, LinearLayoutManager.HORIZONTAL, false)
+        recommendAdapter = RecommendAdapter(
+            itemList,
+            this
+        )
+        binding.rv.adapter = recommendAdapter
     }
 
 //    private fun initlylics() {
@@ -511,6 +580,17 @@ class RecordingActivity : AppCompatActivity() {
     companion object {
         //permission code 선언
         private const val REQUEST_RECORD_AUDIO_PERMISSION = 201
+    }
+
+    override fun onClick(title: String, artist: String,cover:String, songId: Long, instUrl: String?) {
+        this@RecordingActivity.finish()
+        val intent = Intent(this@RecordingActivity, RecordingActivity::class.java)
+        intent.putExtra("title",title)
+        intent.putExtra("artist",artist)
+        intent.putExtra("cover",cover)
+        intent.putExtra("songId",songId)
+        intent.putExtra("instUrl",instUrl)
+        startActivity(intent)
     }
 
 

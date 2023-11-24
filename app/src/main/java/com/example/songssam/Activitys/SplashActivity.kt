@@ -25,6 +25,8 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val keyHash = Utility.getKeyHash(this)
         Log.d("Hash", keyHash)
+        val accesstokenInfo = prefs.getString("accessToken","")
+        Log.d("accessToken", accesstokenInfo)
 
         super.onCreate(savedInstanceState)
         // 상단 액션바 숨기기

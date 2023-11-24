@@ -62,6 +62,7 @@ class ChooseSongActivity : AppCompatActivity(), ItemAdapter.SelectionChangeListe
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -179,58 +180,58 @@ class ChooseSongActivity : AppCompatActivity(), ItemAdapter.SelectionChangeListe
         searchAutoComplete.setHintTextColor(Color.BLACK)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query!=null){
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://songssam.site:8443")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(
-                        OkHttpClient.Builder()
-                            .readTimeout(
-                                30,
-                                TimeUnit.SECONDS
-                            ) // Adjust the timeout as needed
-                            .connectTimeout(30, TimeUnit.SECONDS)
-                            .build()
-                    )
-                    .build()
-                val apiService = retrofit.create(songssamAPI::class.java)
-                val call = apiService.search(query!!, 0)
-                call.enqueue(object : Callback<List<items>> {
-                    override fun onResponse(
-                        call: Call<List<items>>,
-                        response: Response<List<items>>
-                    ) {
-                        if (response.isSuccessful.not()) {
+                if (query != null) {
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl("https://songssam.site:8443")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(
+                            OkHttpClient.Builder()
+                                .readTimeout(
+                                    30,
+                                    TimeUnit.SECONDS
+                                ) // Adjust the timeout as needed
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .build()
+                        )
+                        .build()
+                    val apiService = retrofit.create(songssamAPI::class.java)
+                    val call = apiService.search(query!!, 0)
+                    call.enqueue(object : Callback<List<items>> {
+                        override fun onResponse(
+                            call: Call<List<items>>,
+                            response: Response<List<items>>
+                        ) {
+                            if (response.isSuccessful.not()) {
+                                Toast.makeText(
+                                    this@ChooseSongActivity,
+                                    "서버가 닫혀있습니다!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                Log.d("login", "연결 실패")
+                                return
+                            }
+                            Log.d("login", "로그인 연결 성공")
+                            try {
+                                itemList = response.body()?.toMutableList() ?: mutableListOf()
+                                Thread(Runnable {
+                                    runOnUiThread {
+                                        initRecyclerView(itemList)
+                                    }
+                                }).start()
+                            } catch (e: Exception) {
+                            }
+                        }
+
+                        override fun onFailure(call: Call<List<items>>, t: Throwable) {
+                            Log.d("retrofit", t.stackTraceToString())
                             Toast.makeText(
                                 this@ChooseSongActivity,
-                                "서버가 닫혀있습니다!",
+                                "네트워크 오류와 같은 이유로 오류 발생!",
                                 Toast.LENGTH_LONG
                             ).show()
-                            Log.d("login", "연결 실패")
-                            return
+                            // 네트워크 오류 등 호출 실패 시 처리
                         }
-                        Log.d("login", "로그인 연결 성공")
-                        try {
-                            itemList = response.body()?.toMutableList() ?: mutableListOf()
-                            Thread(Runnable {
-                                runOnUiThread {
-                                    initRecyclerView(itemList)
-                                }
-                            }).start()
-                        } catch (e: Exception) {
-                        }
-                    }
-
-                    override fun onFailure(call: Call<List<items>>, t: Throwable) {
-                        Log.d("retrofit", t.stackTraceToString())
-                        Toast.makeText(
-                            this@ChooseSongActivity,
-                            "네트워크 오류와 같은 이유로 오류 발생!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        // 네트워크 오류 등 호출 실패 시 처리
-                    }
-                })
+                    })
                 }
                 return true
             }

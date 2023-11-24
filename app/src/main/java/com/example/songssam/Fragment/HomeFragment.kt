@@ -54,7 +54,6 @@ class HomeFragment : Fragment() ,generateInterface{
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater)
         getCompletedList()
-        getSampleVoice()
         return binding.root
     }
 
@@ -150,6 +149,7 @@ class HomeFragment : Fragment() ,generateInterface{
                 Log.d("itemList", "로그인 연결 성공")
                 try {
                     itemList = response.body()?.toMutableList() ?: mutableListOf()
+                    getSampleVoice()
                     Log.d("itemList", itemList.toString())
                 } catch (e: Exception) {
                 }
@@ -201,8 +201,8 @@ class HomeFragment : Fragment() ,generateInterface{
                 try {
                     sampleVoiceList = response.body()?.toMutableList() ?: mutableListOf()
                     Log.d("voice", sampleVoiceList.toString())
-                    initSpinner()
                     getGeneratedSongList(sampleVoiceList.first().id)
+                    initSpinner()
                 } catch (e: Exception) {
                     Log.d("voice", e.stackTraceToString())
                 }
