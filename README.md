@@ -14,6 +14,7 @@ AI를 활용한 음성 합성 기술이 고도로 진화함에 따라 AI 커버�
 이 프로젝트는 안드로이드 애플리케이션에서 작동하며, 서버는 Spring과 Django로 운영합니다. 이에 대한 정보는 해당 폴더에서 구체적으로 확인할 수 있습니다.
 
 모델을 사용하기 위해 다음 링크로부터 git clone을 하세요. DDSP-SVC github : https://github.com/yxlllc/DDSP-SVC/tree/master
+
 보컬 분리를 사용하기 위해 다음 링크로부터 git clone을 하세요. Vocal-Remover github : https://github.com/tsurumeso/vocal-remover/tree/develop
 
 ## 참고
