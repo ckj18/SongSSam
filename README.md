@@ -1,10 +1,8 @@
 # SongSSam Model 
-<div align="center">
-![image](https://github.com/ckj18/SongSSam/assets/48816329/abccb42b-c85b-4bb7-b6ab-58a3d62878fe)
-</div>
+![image](https://github.com/ckj18/SongSSam/assets/48816329/39468924-66ce-4ffc-861f-e2ec23e26c79)
 사용자의 목소리를 이용한 AI 커버곡 생성 서비스
 
-##소개
+## 소개
 
 ![image](https://github.com/ckj18/SongSSam/assets/48816329/e4ca96a8-dfc2-47aa-b794-99d9bc333e42)
 
@@ -17,7 +15,7 @@ AI를 활용한 음성 합성 기술이 고도로 진화함에 따라 AI 커버�
 모델을 사용하기 위해 다음 링크로부터 git clone을 하세요. DDSP-SVC github : https://github.com/yxlllc/DDSP-SVC/tree/master
 보컬 분리를 사용하기 위해 다음 링크로부터 git clone을 하세요. Vocal-Remover github : https://github.com/tsurumeso/vocal-remover/tree/develop
 
-##참고
+## 참고
 * [ddsp](https://github.com/magenta/ddsp)
 * [pc-ddsp](https://github.com/yxlllc/pc-ddsp)
 * [soft-vc](https://github.com/bshall/soft-vc)
