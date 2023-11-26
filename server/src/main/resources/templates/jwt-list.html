@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>jwt 토큰 리스트</title>
+  <style>
+      table {
+          border-collapse: collapse;
+          width: 100%;
+      }
+
+      th, td {
+          border: 1px solid black;
+          padding: 8px;
+
+          max-width: 200px;
+          word-break; break-all;
+
+          white-space: nowrap;
+          overflow: hidden;
+          test-overflow: ellipsis;
+      }
+    </style>
+</head>
+<body>
+<h1>jwt 목록</h1>
+<h2>jwt 만료되어 오류 발생시 아래의 주소로 요청</h2>
+<h2>jwtCookie와 jwtRefresh가 쿠키에 설정되어있어야됨</h2>
+<div>
+  <form action="/v2/jwtupdate" method="post">
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+    <p>
+      <input type="submit" value="Update Token">
+    </p>
+  </form>
+</div>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>name</th>
+    <th>email</th>
+    <th>jwtCookie</th>
+    <th>jwtRefresh</th>
+
+    <!-- 추가 필드가 있다면 여기에 추가 -->
+  </tr>
+  </thead>
+  <tbody>
+  <!-- 회원 데이터를 순회하며 테이블에 추가 -->
+  <tr th:each="token : ${jwts}">
+    <td th:text="${token.id}"></td>
+    <td th:text="${token.name}"></td>
+    <td th:text="${token.email}"></td>
+    <td th:text="${token.accessToken}"></td>
+    <td th:text="${token.refreshToken}"></td>
+    <!-- 추가 필드가 있다면 여기에 추가 -->
+  </tr>
+  </tbody>
+</table>
+</body>
+
+<script>
+
+
+</script>
+
+</html>

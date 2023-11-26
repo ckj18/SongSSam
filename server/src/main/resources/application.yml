@@ -1,0 +1,68 @@
+
+jwt:
+  secret-key: ad861fbe42d6d4517997caaac85748c7b33ac43b0eb3d6fe19126eba998c1bb5c29f6110dd5e5d45c287462bc2cbd90865485e93e313717260b3a054c9d355a7
+  token:
+#    expiration-time: 3600 #1시간
+    expiration-time: 2592000
+    refresh-expiration-time: 2592000
+
+oauth:
+  kakao:
+    client-id: f3474b073f9c02883e0b9ac53d7cbead
+    url:
+      auth: https://kauth.kakao.com
+      api: https://kapi.kakao.com
+
+spring:
+  autoconfigure:
+    exclude : org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+  #security:
+  #  oauth2:
+  #    client:
+  #      registration:
+  #        kakao:
+  #          client-id: f3474b073f9c02883e0b9ac53d7cbead   # REST API 키
+  #          redirect-uri: "<http:localhost:3000>"
+  #          client-authentication-method: POST
+  #          authorization-grant-type: authorization_code
+  #          scope: profile_nickname, account_email  # 동의 항목
+  #          client-name: Kakao
+  #      provider:
+  #        kakao:
+  #          authorization-uri: <https://kauth.kakao.com/oauth/authorize>
+  #          token-uri: <https://kauth.kakao.com/oauth/token>
+  #          user-info-uri: <https://kapi.kakao.com/v2/user/me>
+  #          user-name-attribute: id
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring?useUnicode=true&characterEncoding=UTF-8
+    username: root #root - local admin- aws
+    password: password
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mymongodb
+      uri: mongodb://localhost:27017/mymongodb
+  redis:
+    host: localhost
+    port: 6379
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+file:
+  dir: C:\Users\kwy\Documents\2023하계\cleancode
