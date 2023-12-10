@@ -1,25 +1,18 @@
 package com.example.cleancode.utils.jwt;
 
-import com.example.cleancode.user.JpaRepository.MemberRepository;
-import com.example.cleancode.user.dto.JwtDto;
-import com.example.cleancode.user.dto.MemberDto;
-import com.example.cleancode.user.entity.Member;
-import com.example.cleancode.user.entity.Role;
+import com.example.cleancode.user.dto.UserDto;
+import com.example.cleancode.utils.Role;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +27,7 @@ class JwtServiceTest {
     @Test
     @Disabled
     void generate() {
-        MemberDto memberDto = new MemberDto();
+        UserDto memberDto = new UserDto();
         List<Role> roles = Collections.singletonList(Role.ROLE_USER);
     }
 
@@ -43,15 +36,12 @@ class JwtServiceTest {
     }
     @Test
     void generateToken() {
-        MemberDto memberDto = MemberDto.builder()
-                .preference_Title(Set.of("뉴진스","BTS"))
-                .preference_Singer(Set.of("NewJeans","BTSS"))
-                .profile("이것은 프로필")
+        UserDto memberDto = UserDto.builder()
+                .profileUrl("이것은 프로필")
                 .email("이것은 이메일")
                 .nickname("이것은 닉네임")
                 .id(12345l)
-                .preference_Genre(Set.of("팝","힙합"))
-                .role(Collections.singletonList(Role.ROLE_USER))
+                .role(Role.ROLE_USER)
                 .build();
         Date now = new Date();
         Date expirationDate = new Date(now.getTime()+tokenMillisecond*1000l);
@@ -60,7 +50,7 @@ class JwtServiceTest {
         Claims claims = Jwts.claims().setSubject(memberDto.getId().toString());
         claims.put("roles",memberDto.getRole());
         claims.put("email",memberDto.getEmail());
-        claims.put("profile",memberDto.getProfile());
+        claims.put("profile",memberDto.getProfileUrl());
         claims.put("nickname",memberDto.getNickname());
         String token=null;
         try {

@@ -1,47 +1,35 @@
 package com.example.cleancode.user.service;
 
-import com.example.cleancode.user.JpaRepository.MemberRepository;
-import com.example.cleancode.user.JpaRepository.TokenRepository;
+import com.example.cleancode.user.JpaRepository.UserRepository;
 import com.example.cleancode.user.dto.JwtDto;
-import com.example.cleancode.user.dto.MemberDto;
+import com.example.cleancode.user.dto.UserDto;
 import com.example.cleancode.user.service.oauth.KakaoInfoResponse;
-import com.example.cleancode.user.entity.KakaoToken;
-import com.example.cleancode.user.entity.Member;
-import com.example.cleancode.user.entity.Role;
+import com.example.cleancode.user.entity.User;
+import com.example.cleancode.utils.CustomException.ExceptionCode;
+import com.example.cleancode.utils.CustomException.FormatException;
+import com.example.cleancode.utils.Role;
 import com.example.cleancode.utils.jwt.JwtService;
 import com.example.cleancode.user.service.oauth.KakaoLoginParam;
-import com.example.cleancode.user.service.oauth.KakaoTokenProvider;
+import com.example.cleancode.user.service.oauth.KakaoTokenService;
 import com.example.cleancode.user.service.oauth.KakaoTokenResponse;
 import com.example.cleancode.user.service.oauth.KakaoValidateResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class LoginService {
-    @Autowired
-    private MemberRepository memberRepository;
-//    @Autowired
-//    private TokenRepository tokenRepository;
-    @Autowired
-    private KakaoTokenProvider kakaoTokenProvider;
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
-
+    private final UserRepository memberRepository;
+    private final KakaoTokenService kakaoTokenService;
+    private final JwtService jwtService;
     @Value("${jwt.token.expiration-time}")
     private Long tokenMillisecond;
     @Value("${jwt.token.refresh-expiration-time}")
@@ -50,48 +38,53 @@ public class LoginService {
 
     //jwt 토큰이 없거나 만료된 유저들
     @Transactional
-    public Member join(KakaoLoginParam kakaoLoginParam)throws Exception{
-        KakaoTokenResponse kakaoTokenResponse = kakaoTokenProvider.requestAccessToken(kakaoLoginParam);
+    public JwtDto join(KakaoLoginParam kakaoLoginParam) {
+        KakaoTokenResponse kakaoTokenResponse = kakaoTokenService.requestAccessToken(kakaoLoginParam);
         //1. authorizationCode 로 카카오톡 accesstoken과 refreshtoken받아오기
         //1-2 토큰 유효성 검사 + 회원번호 획득
-        KakaoValidateResponse kakaoValidateResponse = kakaoTokenProvider.tokenInfo(kakaoTokenResponse.getAccessToken());
+        if(kakaoTokenResponse.getAccessToken()==null){
+            log.info("받은 액세스 토큰 : {}",kakaoLoginParam.getAuthorizationCode());
+            log.error("유효하지않은 카카오 accessToken");
+            throw new FormatException(ExceptionCode.FORMAT_ERROR);
+        }
+        KakaoValidateResponse kakaoValidateResponse = kakaoTokenService.tokenInfo(kakaoTokenResponse.getAccessToken());
         Long id = kakaoValidateResponse.getId();
         //2. 받아온 accesstoken이용하여 사용자 정보 요청 & 받아오기
         System.out.println("id = " + id);
-        KakaoInfoResponse kakaoInfoResponse = kakaoTokenProvider.requestUserInfo(kakaoTokenResponse.getAccessToken());
-        Optional<Member> isExist = memberRepository.findById(id);
+        KakaoInfoResponse kakaoInfoResponse = kakaoTokenService.requestUserInfo(kakaoTokenResponse.getAccessToken());
+//        kakaoTokenService.tokenfire(kakaoTokenResponse.getAccessToken(),id);
+        Optional<User> isExist = memberRepository.findById(id);
         //회원정보 저장 필요
         //사용자 추가
-        Member member = Member.builder()
-                .id(id)
-                .email(kakaoInfoResponse.getKakaoAccount().getEmail())
-                .nickname(kakaoInfoResponse.getKakaoAccount().getProfile().getNickname())
-                .profile(kakaoInfoResponse.getKakaoAccount().getProfile().getProfile())
-                .role(Collections.singletonList(Role.ROLE_USER))
-                .build();
-        log.info(member.toString());
-        return memberRepository.save(member);
-    }
-    public boolean logout(HttpServletRequest request){
-        try{
-            JwtDto jwtDto= jwtService.resolveJwt(request).get();
-            Long expiration = jwtService.getExpiration(jwtDto);
-            redisTemplate.opsForValue().set(jwtDto.getAccessToken(),"logout",expiration);
-            return true;
-        }catch (Exception ex){
-            log.error("블랙리스트 등록 에러");
-            return false;
+        if(isExist.isEmpty()) {
+            List<Integer> integerList = List.of(100,150,200,250,300,350,400,450);
+            User member = User.builder()
+                    .id(id)
+                    .email(kakaoInfoResponse.getKakaoAccount().getEmail())
+                    .nickname(kakaoInfoResponse.getKakaoAccount().getProfile().getNickname())
+                    .profileUrl(kakaoInfoResponse.getKakaoAccount().getProfile().getThumbnail_image_url())
+                    .spectr(integerList)
+                    .role(Role.ROLE_USER)
+                    .build();
+            log.info(member.toString());
+            memberRepository.save(member);
+
+            return jwtService.generate(member.toMemberDto());
         }
+        return jwtService.generate(isExist.get().toMemberDto());
     }
+    @Deprecated
     public JwtDto login(KakaoLoginParam kakaoLoginParam, HttpServletResponse response) {
         try{
-            KakaoTokenResponse KResponse = kakaoTokenProvider.requestAccessToken(kakaoLoginParam);
+            KakaoTokenResponse KResponse = kakaoTokenService.requestAccessToken(kakaoLoginParam);
             String accessToken = KResponse.getAccessToken();
             String refreshToken = KResponse.getRefreshToken();
-            KakaoValidateResponse validateResponse = kakaoTokenProvider.tokenInfo(accessToken);
+            KakaoValidateResponse validateResponse = kakaoTokenService.tokenInfo(accessToken);
             Long id = validateResponse.getId();
-            MemberDto memberDto = memberRepository.findById(id).get().toMemberDto();
-            return jwtService.generate(memberDto,memberDto.getRole());
+            Optional<User> member = memberRepository.findById(id);
+            UserDto memberDto = member.get().toMemberDto();
+
+            return jwtService.generate(memberDto);
         }catch (Exception e){
             System.out.println("Transaction rolled back:{}"+e.getMessage());
             return null;
