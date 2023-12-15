@@ -430,7 +430,7 @@ const RightArrow = styled.div`
     cursor : pointer;
     position : absolute ;
     top : 0;
-    right : 60px;
+    left : 680px;
     background-color : rgba(0,0,0,0.7);
     height : 120px;
     width : 30px;
