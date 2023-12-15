@@ -12,25 +12,50 @@
 
 
 ## 메인 화면
-<img width="800" alt="스크린샷 2023-11-12 오후 8 31 56" src="https://github.com/ckj18/SongSSam/assets/133619736/23f4174d-5c1a-48e3-849a-d4978611b244">
 
 
+<img width="800" alt="스크린샷 2023-12-16 오전 12 08 09" src="https://github.com/ckj18/SongSSam/assets/133619736/f21d12a8-ee1c-4c50-8494-5648de46b78c">
+
+
+## 메인 화면 2(AI 커버곡 표시)
+
+
+<img width="800" alt="스크린샷 2023-12-10 오후 9 28 48" src="https://github.com/ckj18/SongSSam/assets/133619736/892ed0bb-3c16-45e9-a199-2407e2ecb3ff">
 
 
 ## 곡 상세 페이지
-<img width="800" alt="스크린샷 2023-11-12 오후 8 32 16" src="https://github.com/ckj18/SongSSam/assets/133619736/9433f93a-5f98-4ba3-b069-1e2858b51a4a">
+
+
+<img width="800" alt="스크린샷 2023-12-16 오전 12 22 05" src="https://github.com/ckj18/SongSSam/assets/133619736/176d129c-a224-48af-99e7-c53204fd7688">
 
 
 
-### 퍼펙트 스코어 확인 
-<img width="1420" alt="스크린샷 2023-11-12 오후 8 33 30" src="https://github.com/ckj18/SongSSam/assets/133619736/6d816de1-e994-4ffc-85f7-28c466588f04">
+### 노래부르기 버튼 클릭시 
+
+
+<img width="800" alt="스크린샷 2023-12-16 오전 12 12 17" src="https://github.com/ckj18/SongSSam/assets/133619736/40479bef-08d8-41a5-bca6-a48a86e66192">
+
 
 
 ### 녹음 종료 클릭 시 오디오 컴포넌트 생성
+
 <img width="400" alt="스크린샷 2023-11-12 오후 8 33 42" src="https://github.com/ckj18/SongSSam/assets/133619736/f86c511b-60a7-4187-b333-821891d15d69">
 
 
-### 파일 업로드 버튼 클릭 시
+## AI 커버곡 만들기 클릭시
+
+
+<img width="1439" alt="스크린샷 2023-12-10 오후 9 30 46" src="https://github.com/ckj18/SongSSam/assets/133619736/fdb15cd2-1380-4dfa-a42a-e2143ecac51d">
+
+
+## 추천 곡 리스트
+
+
+<img width="800" alt="스크린샷 2023-12-16 오전 12 08 43" src="https://github.com/ckj18/SongSSam/assets/133619736/97d2d1a8-03b4-47ed-8316-5c6a1c332d56">
+
+
+
+
 
 
  **(매우 중요)곡 상세 페이지에서 파일 업로드를 하면 업로드한 파일 이름과 상관없이 해당 곡의 songId로 알아서 이름이 바뀌어 서버에 전송이 됩니다**
@@ -50,6 +75,10 @@
 
 
 ## 내 정보
+
+
+<img width="800" alt="스크린샷 2023-12-16 오전 12 12 35" src="https://github.com/ckj18/SongSSam/assets/133619736/c9b5068e-2a9d-45f1-bb4c-58b117b0d4c9">
+
 
 
 ## 선호 노래 조사
