@@ -20,4 +20,4 @@ nohup java -jar {생성된파일이름}.jar & 통해 배포
 
 * 추천 알고리즘은 아래 레포지토리의 README를 참고하여 설정
 * 노래 데이터의 전처리 및 음역대 추출, AI보컬곡 생성은 아래 레포지토리의 README를 참고하여 설정
-DL 서버: https://github.com/ckj18/SongSSam/blob/master/djangoserver/readme.md
+  * DL 서버: https://github.com/ckj18/SongSSam/blob/master/djangoserver/readme.md
