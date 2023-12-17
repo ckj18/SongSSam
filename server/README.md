@@ -18,6 +18,15 @@ cd ./build/libs
 nohup java -jar {생성된파일이름}.jar & 통해 배포
 ```
 
-* 추천 알고리즘은 아래 레포지토리의 README를 참고하여 설정
+* 추천 알고리즘은 아래의 설명을 참고하여 설정
+  ```
+  git clone
+  mysql에 접속하여 아래의 쿼리를 사용하여 필요한 파일을 가져오고 clone 한 레포지토리와 같은 폴더에 저장한다.
+  SELECT id,artist,title
+  INTO OUTFILE '~/output.csv'
+  FIELDS TERMINATED BY ','
+  LINES TERMINATED BY '\n'
+  FROM song;
+  ```
 * 노래 데이터의 전처리 및 음역대 추출, AI보컬곡 생성은 아래 레포지토리의 README를 참고하여 설정
   * DL 서버: https://github.com/ckj18/SongSSam/blob/master/djangoserver/readme.md
